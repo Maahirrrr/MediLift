@@ -1,0 +1,132 @@
+<!-- HARDWARE -->
+<section id="hardware" class="hardware-section">
+  <div class="hardware-inner">
+    <div class="section-header reveal">
+      <div class="eyebrow">Open-Source Hardware</div>
+      <h2 class="section-h">Built from open parts.<br/><span class="hl">3×3 ft X8 Octocopter.</span></h2>
+      <p class="section-p">Assembled from commercially available, open-source-compatible components. Repaired and upgraded in India. No proprietary lock-in.</p>
+    </div>
+
+    <div class="hw-grid">
+      <div class="hw-card reveal">
+        <div class="hw-icon">🏗️</div>
+        <div class="hw-label">Frame</div>
+        <div class="hw-name">Spacedrone X8 Frame</div>
+        <div class="hw-spec">91×91 cm · Carbon Fiber</div>
+        <div class="hw-desc">Open-source parametric frame design (github.com/spacedrone). Custom CNC-cut carbon fiber arms. X8 coaxial octocopter configuration for payload redundancy.</div>
+        <a href="https://github.com/spacedrone808" target="_blank" class="hw-buy">Buy: Robu.in CF tubes ↗</a>
+      </div>
+      <div class="hw-card reveal">
+        <div class="hw-icon">⚙️</div>
+        <div class="hw-label">Motors (×8)</div>
+        <div class="hw-name">T-Motor MN501-S</div>
+        <div class="hw-spec">300KV · 30-inch props</div>
+        <div class="hw-desc">High-efficiency low-KV motors matched with 30-inch carbon propellers. Generates ~4kg thrust per motor (32kg total). Certified for heavy-lift operations.</div>
+        <a href="https://robu.in" target="_blank" class="hw-buy">Buy: Robu.in / Zbotic.in ↗</a>
+      </div>
+      <div class="hw-card reveal">
+        <div class="hw-icon">🧠</div>
+        <div class="hw-label">Flight Controller</div>
+        <div class="hw-name">Pixhawk 6X</div>
+        <div class="hw-spec">ArduCopter 4.4 firmware</div>
+        <div class="hw-desc">100% open-source firmware (ArduCopter). Triple IMU redundancy. Supports VTOL, auto-takeoff, precision landing with ArUco markers. Full MAVLink telemetry.</div>
+        <a href="https://zbotic.in" target="_blank" class="hw-buy">Buy: Zbotic.in ↗</a>
+      </div>
+      <div class="hw-card reveal">
+        <div class="hw-icon">📡</div>
+        <div class="hw-label">Telemetry Radio</div>
+        <div class="hw-name">RFD900x Long Range</div>
+        <div class="hw-spec">900 MHz · 5 km range</div>
+        <div class="hw-desc">Supports full 5 km mission range with bidirectional link. 250ms latency for real-time control. Fallback to 4G/LTE modem on Mission Planner GCS.</div>
+        <a href="https://robu.in" target="_blank" class="hw-buy">Buy: Robu.in ↗</a>
+      </div>
+      <div class="hw-card reveal">
+        <div class="hw-icon">🔋</div>
+        <div class="hw-label">Battery</div>
+        <div class="hw-name">2× Li-Ion 6S 30000mAh</div>
+        <div class="hw-spec">Parallel · 22.2V</div>
+        <div class="hw-desc">High-capacity Li-Ion packs in parallel for 35-min endurance at cruise. Samsung 21700 cells. BMS with over-temp cutoff. Charged via dual B6AC chargers.</div>
+        <a href="https://evelta.com" target="_blank" class="hw-buy">Buy: Evelta.com ↗</a>
+      </div>
+      <div class="hw-card reveal">
+        <div class="hw-icon">❄️</div>
+        <div class="hw-label">Bio-Pod</div>
+        <div class="hw-name">Custom TEC Pod</div>
+        <div class="hw-spec">4°C ±0.5°C · 2kg capacity</div>
+        <div class="hw-desc">Thermoelectric cooler (Peltier) in custom PETG-printed enclosure. Temperature logged every 10 seconds to SD card. Emergency alert at ±1°C deviation from setpoint.</div>
+        <a href="https://indianrobostore.com" target="_blank" class="hw-buy">Buy parts: Indian Robo Store ↗</a>
+      </div>
+    </div>
+
+    <!-- Drone Specs Table -->
+    <div class="drone-diagram reveal">
+      <div>
+        <!-- SVG Drone Diagram (top view) -->
+        <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;margin:0 auto;display:block">
+          <defs>
+            <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <radialGradient id="bodyGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#1a2a3a"/>
+              <stop offset="100%" stop-color="#0a1520"/>
+            </radialGradient>
+          </defs>
+          <!-- Arms -->
+          <line x1="160" y1="160" x2="60" y2="60" stroke="#334" stroke-width="8" stroke-linecap="round"/>
+          <line x1="160" y1="160" x2="260" y2="60" stroke="#334" stroke-width="8" stroke-linecap="round"/>
+          <line x1="160" y1="160" x2="60" y2="260" stroke="#334" stroke-width="8" stroke-linecap="round"/>
+          <line x1="160" y1="160" x2="260" y2="260" stroke="#334" stroke-width="8" stroke-linecap="round"/>
+          <!-- Rotors (lower) -->
+          <circle cx="60" cy="60" r="38" fill="none" stroke="#223" stroke-width="2"/>
+          <circle cx="260" cy="60" r="38" fill="none" stroke="#223" stroke-width="2"/>
+          <circle cx="60" cy="260" r="38" fill="none" stroke="#223" stroke-width="2"/>
+          <circle cx="260" cy="260" r="38" fill="none" stroke="#223" stroke-width="2"/>
+          <!-- Rotors (upper / coaxial) -->
+          <circle cx="60" cy="60" r="28" fill="none" stroke="rgba(0,229,160,.5)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <circle cx="260" cy="60" r="28" fill="none" stroke="rgba(0,229,160,.5)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <circle cx="60" cy="260" r="28" fill="none" stroke="rgba(0,229,160,.5)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <circle cx="260" cy="260" r="28" fill="none" stroke="rgba(0,229,160,.5)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <!-- Motor hubs -->
+          <circle cx="60" cy="60" r="10" fill="#00e5a0" filter="url(#glow)" opacity=".9"/>
+          <circle cx="260" cy="60" r="10" fill="#00e5a0" filter="url(#glow)" opacity=".9"/>
+          <circle cx="60" cy="260" r="10" fill="#00e5a0" filter="url(#glow)" opacity=".9"/>
+          <circle cx="260" cy="260" r="10" fill="#00e5a0" filter="url(#glow)" opacity=".9"/>
+          <!-- Body -->
+          <rect x="128" y="128" width="64" height="64" rx="12" fill="url(#bodyGrad)" stroke="#334" stroke-width="1.5"/>
+          <!-- FC logo -->
+          <text x="160" y="156" text-anchor="middle" fill="rgba(0,229,160,.7)" font-size="10" font-family="monospace" font-weight="bold">PX6X</text>
+          <text x="160" y="170" text-anchor="middle" fill="rgba(255,255,255,.3)" font-size="8" font-family="monospace">FC</text>
+          <!-- Dimension lines -->
+          <line x1="20" y1="60" x2="20" y2="260" stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-dasharray="3 3"/>
+          <text x="10" y="165" fill="rgba(255,255,255,.3)" font-size="9" font-family="monospace" text-anchor="middle" transform="rotate(-90,10,165)">91 cm</text>
+          <line x1="60" y1="300" x2="260" y2="300" stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-dasharray="3 3"/>
+          <text x="160" y="314" fill="rgba(255,255,255,.3)" font-size="9" font-family="monospace" text-anchor="middle">91 cm</text>
+          <!-- Front indicator -->
+          <polygon points="160,118 152,132 168,132" fill="var(--accent,#00e5a0)" opacity=".8"/>
+          <text x="160" y="112" text-anchor="middle" fill="rgba(0,229,160,.6)" font-size="8" font-family="monospace">FWD</text>
+          <!-- Label -->
+          <text x="160" y="22" text-anchor="middle" fill="rgba(0,229,160,.5)" font-size="10" font-family="'Inter',sans-serif" font-weight="600">X8 OCTOCOPTER · TOP VIEW</text>
+        </svg>
+      </div>
+      <div>
+        <h3 style="font-family:var(--font2);font-size:22px;font-weight:700;margin-bottom:24px;letter-spacing:-.02em">Full Specifications</h3>
+        <div class="drone-specs-list">
+          <div class="spec-row"><span class="spec-key">Configuration</span><span class="spec-val">X8 Coaxial Octocopter</span></div>
+          <div class="spec-row"><span class="spec-key">Footprint</span><span class="spec-val green">3×3 ft (91×91 cm)</span></div>
+          <div class="spec-row"><span class="spec-key">Max Payload</span><span class="spec-val green">2.0 kg</span></div>
+          <div class="spec-row"><span class="spec-key">Operational Range</span><span class="spec-val green">5 km</span></div>
+          <div class="spec-row"><span class="spec-key">Cruise Speed</span><span class="spec-val">45 km/h</span></div>
+          <div class="spec-row"><span class="spec-key">Max Speed</span><span class="spec-val">72 km/h</span></div>
+          <div class="spec-row"><span class="spec-key">Endurance</span><span class="spec-val">35 min</span></div>
+          <div class="spec-row"><span class="spec-key">Cruise Altitude</span><span class="spec-val">120m AGL</span></div>
+          <div class="spec-row"><span class="spec-key">Landing Accuracy</span><span class="spec-val green">&lt;0.5 m</span></div>
+          <div class="spec-row"><span class="spec-key">Autopilot</span><span class="spec-val blue">Pixhawk 6X / ArduCopter</span></div>
+          <div class="spec-row"><span class="spec-key">Frame Source</span><span class="spec-val blue">Spacedrone (Open Source)</span></div>
+          <div class="spec-row"><span class="spec-key">Bio-Pod Temp</span><span class="spec-val green">4°C ±0.5°C</span></div>
+        </div>
+        <div class="os-note" style="margin-top:20px">
+          🛠️ Frame design based on open-source <a href="https://github.com/spacedrone808" target="_blank">Spacedrone</a> project — replicated at 3×3 ft scale. Firmware: <a href="https://ardupilot.org" target="_blank" style="color:var(--accent2)">ArduCopter 4.4</a> (Apache-2.0 license). Full BOM and build guide on request.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

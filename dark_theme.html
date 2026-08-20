@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MediLift — AI Precision Organ Delivery Drones | Ahmedabad</title>
+<meta name="description" content="MediLift delivers donated organs from airport to Civil Hospital in 18 minutes across 5 km — bypassing Ahmedabad traffic entirely. Autonomous AI precision drone delivery for healthcare."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ==================== RESET ==================== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:        #050508;
+  --bg2:       #080d15;
+  --bg3:       #0c1220;
+  --card:      rgba(255,255,255,0.035);
+  --card-hov:  rgba(255,255,255,0.065);
+  --border:    rgba(255,255,255,0.07);
+  --border-g:  rgba(0,229,160,0.35);
+  --accent:    #00e5a0;
+  --accent2:   #0099ff;
+  --red:       #ff4d6d;
+  --text:      #f0f2f6;
+  --muted:     rgba(240,242,246,0.42);
+  --muted2:    rgba(240,242,246,0.22);
+  --font:      'Inter',system-ui,sans-serif;
+  --font2:     'Space Grotesk',system-ui,sans-serif;
+  --r:         18px;
+  --r2:        24px;
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+
+/* Noise overlay */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.032;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+/* ==================== NAV ==================== */
+nav{
+  position:fixed;top:14px;left:50%;transform:translateX(-50%);
+  width:calc(100% - 40px);max-width:1160px;z-index:900;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:10px 14px 10px 12px;
+  background:rgba(5,5,8,.78);
+  border:1px solid var(--border);border-radius:100px;
+  backdrop-filter:blur(20px) saturate(160%);
+  box-shadow:0 2px 40px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.04) inset;
+  transition:box-shadow .3s;
+}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo-mark{
+  width:34px;height:34px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),#00b37e);
+  display:flex;align-items:center;justify-content:center;font-size:17px;
+  box-shadow:0 0 16px rgba(0,229,160,.35);
+}
+.nav-brand{font-size:15px;font-weight:800;letter-spacing:-.4px;font-family:var(--font2)}
+.nav-links{display:flex;align-items:center;gap:2px;list-style:none}
+.nav-links a{
+  padding:7px 14px;font-size:13px;font-weight:500;color:var(--muted);
+  border-radius:100px;transition:color .2s,background .2s;
+}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,.07)}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.btn-ghost{
+  padding:8px 18px;font-size:13px;font-weight:600;color:var(--text);
+  border:1px solid var(--border);border-radius:100px;background:transparent;cursor:pointer;
+  transition:all .2s;
+}
+.btn-ghost:hover{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.07)}
+.btn-pill{
+  padding:9px 20px;font-size:13px;font-weight:700;color:#050508;
+  border:none;border-radius:100px;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent) 0%,#00c48a 100%);
+  box-shadow:0 0 20px rgba(0,229,160,.3);
+  transition:all .28s cubic-bezier(.16,1,.3,1);
+}
+.btn-pill:hover{transform:translateY(-1px);box-shadow:0 0 32px rgba(0,229,160,.55),0 8px 24px rgba(0,0,0,.4)}
+
+/* ==================== HERO ==================== */
+.hero{
+  min-height:100vh;display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:center;gap:60px;
+  padding:120px 60px 80px;
+  max-width:1280px;margin:0 auto;
+  position:relative;
+}
+.hero-glow{
+  position:absolute;pointer-events:none;border-radius:50%;filter:blur(100px);opacity:.15;
+}
+.hero-glow-1{width:600px;height:600px;background:var(--accent);top:-100px;left:-100px}
+.hero-glow-2{width:500px;height:500px;background:var(--accent2);bottom:0;right:0}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;border-radius:100px;
+  border:1px solid rgba(0,229,160,.3);background:rgba(0,229,160,.08);
+  font-size:12px;font-weight:700;color:var(--accent);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:28px;
+}
+.hero-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+
+.hero h1{
+  font-family:var(--font2);
+  font-size:clamp(44px,5.5vw,80px);
+  font-weight:700;line-height:1.04;letter-spacing:-.04em;
+  margin-bottom:24px;
+}
+.hero h1 .hl{color:var(--accent)}
+.hero-desc{
+  font-size:clamp(16px,1.4vw,19px);color:var(--muted);line-height:1.65;
+  max-width:520px;margin-bottom:40px;
+}
+.hero-ctas{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.btn-hero-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:15px 32px;font-size:15px;font-weight:700;
+  border-radius:100px;border:none;cursor:pointer;color:#050508;
+  background:linear-gradient(135deg,var(--accent),#00c48a);
+  box-shadow:0 0 24px rgba(0,229,160,.35);
+  transition:all .3s cubic-bezier(.16,1,.3,1);
+}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,229,160,.6),0 12px 30px rgba(0,0,0,.5)}
+.btn-hero-sec{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 28px;font-size:15px;font-weight:600;
+  border-radius:100px;border:1px solid var(--border);color:var(--text);
+  background:rgba(255,255,255,.05);cursor:pointer;
+  transition:all .2s;
+}
+.btn-hero-sec:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.09)}
+
+/* Drone SVG animate */
+.drone-svg-wrapper{animation:droneFloat 3.5s ease-in-out infinite;display:inline-block}
+@keyframes droneFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+/* Route canvas panel */
+.hero-visual{
+  position:relative;
+  background:rgba(8,13,21,.8);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05) inset;
+}
+#hero-canvas{display:block;width:100%;height:400px}
+
+/* ==================== STATS ==================== */
+.stats-section{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  background:var(--bg2);
+}
+.stat{
+  padding:40px 32px;text-align:center;
+  border-right:1px solid var(--border);
+  transition:background .2s;
+}
+.stat:last-child{border-right:none}
+.stat:hover{background:rgba(255,255,255,.03)}
+.stat-num{
+  font-family:var(--font2);
+  font-size:52px;font-weight:700;line-height:1;
+  letter-spacing:-.04em;color:var(--text);margin-bottom:8px;
+}
+.stat-num span{color:var(--accent)}
+.stat-label{font-size:13px;color:var(--muted);line-height:1.5;font-weight:500}
+
+/* ==================== ROUTE SECTION ==================== */
+.route-section{
+  padding:100px 60px;background:var(--bg2);
+  position:relative;overflow:hidden;
+}
+.route-section::before{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:800px;height:800px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,229,160,.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.section-header{max-width:640px;margin:0 auto;text-align:center;margin-bottom:64px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:16px;
+}
+.eyebrow::before{content:'';width:20px;height:1.5px;background:var(--accent)}
+h2.section-h{
+  font-family:var(--font2);
+  font-size:clamp(32px,4vw,52px);font-weight:700;
+  letter-spacing:-.035em;line-height:1.08;margin-bottom:16px;
+}
+h2.section-h .hl{color:var(--accent)}
+.section-p{font-size:16px;color:var(--muted);line-height:1.7}
+
+.route-canvas-wrap{
+  max-width:1000px;margin:0 auto;
+  background:rgba(5,10,20,.9);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,.5),0 0 0 1px rgba(0,229,160,.05) inset;
+}
+#route-canvas{display:block;width:100%;height:480px}
+.route-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;border-top:1px solid var(--border);
+  font-size:12px;color:var(--muted);font-weight:500;
+}
+.route-meta-item{display:flex;align-items:center;gap:6px}
+.meta-dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+
+/* ==================== MISSION ==================== */
+.mission-section{padding:100px 60px;max-width:1280px;margin:0 auto}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:64px}
+.mcard{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r2);
+  padding:40px;transition:all .3s cubic-bezier(.16,1,.3,1);
+}
+.mcard:hover{background:var(--card-hov);border-color:var(--border-g);box-shadow:0 0 40px rgba(0,229,160,.08),0 20px 50px rgba(0,0,0,.3);transform:translateY(-4px)}
+.mcard-icon{font-size:32px;margin-bottom:20px}
+.mcard h3{font-family:var(--font2);font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:10px}
+.mcard p{font-size:14.5px;color:var(--muted);line-height:1.7}
+
+/* ==================== HARDWARE ==================== */
+.hardware-section{
+  padding:100px 60px;background:var(--bg2);
+}
+.hardware-inner{max-width:1280px;margin:0 auto}
+.hw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:64px}
+.hw-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:28px;transition:all .3s;
+}
+.hw-card:hover{border-color:var(--border-g);background:var(--card-hov);box-shadow:0 0 30px rgba(0,229,160,.1)}
+.hw-icon{font-size:26px;margin-bottom:14px}
+.hw-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted2);margin-bottom:6px}
+.hw-name{font-size:17px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;font-family:var(--font2)}
+.hw-spec{font-size:13px;color:var(--accent);font-weight:600;margin-bottom:8px;font-family:monospace}
+.hw-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.hw-buy{
+  display:inline-block;margin-top:12px;font-size:11.5px;
+  color:var(--accent2);font-weight:600;
+  text-decoration:underline;text-decoration-color:rgba(0,153,255,.35);
+  text-underline-offset:3px;transition:color .2s;
+}
+.hw-buy:hover{color:#4db8ff}
+
+/* Drone diagram box */
+.drone-diagram{
+  max-width:1280px;margin:48px auto 0;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r2);
+  padding:48px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
+}
+.drone-specs-list{display:flex;flex-direction:column;gap:12px}
+.spec-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;
+}
+.spec-row:last-child{border-bottom:none}
+.spec-key{color:var(--muted);font-weight:500}
+.spec-val{font-weight:700;color:var(--text);font-family:monospace;font-size:13px}
+.spec-val.green{color:var(--accent)}
+.spec-val.blue{color:var(--accent2)}
+.os-note{
+  margin-top:16px;padding:12px 16px;
+  background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);
+  border-radius:10px;font-size:12.5px;color:var(--muted);line-height:1.6;
+}
+.os-note a{color:var(--accent)}
+
+/* ==================== HOW IT WORKS ==================== */
+.how-section{padding:100px 60px;max-width:1280px;margin:0 auto}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:64px;position:relative}
+.steps::before{
+  content:'';position:absolute;top:28px;left:calc(10% + 16px);
+  right:calc(10% + 16px);height:1px;
+  background:repeating-linear-gradient(90deg,var(--accent) 0,var(--accent) 8px,transparent 8px,transparent 18px);
+  opacity:.4;
+}
+.step{position:relative;text-align:center;padding:0 8px}
+.step-num{
+  width:56px;height:56px;border-radius:16px;margin:0 auto 20px;
+  background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:var(--accent);
+  font-family:var(--font2);position:relative;z-index:1;
+  transition:all .3s;
+}
+.step:hover .step-num{background:rgba(0,229,160,.12);border-color:var(--border-g);box-shadow:0 0 20px rgba(0,229,160,.25)}
+.step h4{font-size:14px;font-weight:700;margin-bottom:8px;letter-spacing:-.01em}
+.step p{font-size:12.5px;color:var(--muted);line-height:1.6}
+
+/* ==================== TECH ==================== */
+.tech-section{padding:100px 60px;background:var(--bg2)}
+.tech-inner{max-width:1280px;margin:0 auto}
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:64px}
+.tech-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:32px;transition:all .3s;
+}
+.tech-card:hover{border-color:var(--border-g);background:var(--card-hov);transform:translateY(-3px);box-shadow:0 20px 50px rgba(0,0,0,.3),0 0 30px rgba(0,229,160,.08)}
+.tc-icon{font-size:28px;margin-bottom:18px}
+.tc-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2);margin-bottom:6px}
+.tc-title{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px;font-family:var(--font2)}
+.tc-desc{font-size:13.5px;color:var(--muted);line-height:1.65}
+
+/* ==================== SAFETY ==================== */
+.safety-section{padding:100px 60px;max-width:1280px;margin:0 auto}
+.safety-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:64px}
+.safety-card{
+  display:flex;gap:18px;align-items:flex-start;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:28px;transition:all .25s;
+}
+.safety-card:hover{border-color:var(--border-g);background:var(--card-hov)}
+.s-icon{
+  width:48px;height:48px;flex-shrink:0;border-radius:14px;
+  background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.2);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.s-text h4{font-size:15px;font-weight:700;margin-bottom:6px}
+.s-text p{font-size:13.5px;color:var(--muted);line-height:1.6}
+
+/* ==================== ROADMAP ==================== */
+.roadmap-section{padding:100px 60px;background:var(--bg2)}
+.roadmap-inner{max-width:900px;margin:0 auto}
+.timeline{margin-top:64px;border-left:2px solid var(--border);padding-left:40px;display:flex;flex-direction:column;gap:0}
+.tl-item{position:relative;padding-bottom:48px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{
+  content:'';position:absolute;left:-49px;top:5px;
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid var(--border);background:var(--bg2);
+}
+.tl-item.done::before{background:var(--accent);border-color:var(--accent);box-shadow:0 0 12px rgba(0,229,160,.5)}
+.tl-item.active::before{background:var(--accent2);border-color:var(--accent2);box-shadow:0 0 12px rgba(0,153,255,.5)}
+.tl-phase{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px}
+.tl-item.active .tl-phase{color:var(--accent2)}
+.tl-title{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px;font-family:var(--font2)}
+.tl-desc{font-size:14px;color:var(--muted);line-height:1.65}
+
+/* ==================== PRICING ==================== */
+.pricing-section{padding:100px 60px;max-width:1280px;margin:0 auto}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:64px;align-items:start}
+.p-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r2);
+  padding:36px;transition:all .3s;
+}
+.p-card.hot{
+  background:rgba(0,229,160,.06);border-color:rgba(0,229,160,.3);
+  box-shadow:0 0 40px rgba(0,229,160,.1),0 40px 80px rgba(0,0,0,.3);
+  transform:scale(1.03);
+}
+.p-tier{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted2);margin-bottom:12px}
+.p-card.hot .p-tier{color:var(--accent)}
+.p-price{font-family:var(--font2);font-size:44px;font-weight:700;letter-spacing:-.04em;margin-bottom:6px}
+.p-card.hot .p-price{color:var(--accent)}
+.p-per{font-size:13px;color:var(--muted);margin-bottom:28px}
+.p-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.p-features li{font-size:13.5px;display:flex;align-items:flex-start;gap:10px}
+.p-features li::before{content:'✓';color:var(--accent);font-weight:800;flex-shrink:0}
+.btn-p{
+  width:100%;padding:14px;border-radius:100px;font-size:14px;font-weight:700;
+  cursor:pointer;border:none;font-family:var(--font);transition:all .25s;
+}
+.btn-p-out{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-p-out:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.06)}
+.btn-p-green{background:linear-gradient(135deg,var(--accent),#00c48a);color:#050508}
+.btn-p-green:hover{box-shadow:0 0 30px rgba(0,229,160,.5),0 8px 20px rgba(0,0,0,.4);transform:translateY(-1px)}
+
+/* ==================== CTA ==================== */
+.cta-section{
+  padding:120px 60px;text-align:center;
+  background:linear-gradient(180deg,var(--bg2),var(--bg));
+  position:relative;overflow:hidden;
+}
+.cta-section::before{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,229,160,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.cta-section h2{
+  font-family:var(--font2);
+  font-size:clamp(36px,5vw,70px);font-weight:700;
+  letter-spacing:-.04em;max-width:800px;margin:0 auto 20px;
+  position:relative;
+}
+.cta-section p{font-size:18px;color:var(--muted);max-width:480px;margin:0 auto 52px;line-height:1.65;position:relative}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative}
+.btn-cta-main{
+  padding:18px 44px;font-size:16px;font-weight:700;border-radius:100px;
+  background:linear-gradient(135deg,var(--accent),#00c48a);color:#050508;
+  border:none;cursor:pointer;transition:all .3s;
+}
+.btn-cta-main:hover{box-shadow:0 0 40px rgba(0,229,160,.55),0 12px 36px rgba(0,0,0,.5);transform:translateY(-2px)}
+.btn-cta-out{
+  padding:17px 36px;font-size:16px;font-weight:600;border-radius:100px;
+  background:transparent;color:var(--text);
+  border:1px solid rgba(255,255,255,.18);cursor:pointer;transition:all .2s;
+}
+.btn-cta-out:hover{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.05)}
+
+/* ==================== TRUST ==================== */
+.trust-strip{
+  display:flex;align-items:center;gap:48px;justify-content:center;flex-wrap:wrap;
+  padding:40px 60px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  background:var(--bg2);
+}
+.trust-label{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.trust-names{display:flex;align-items:center;gap:40px;flex-wrap:wrap}
+.trust-name{
+  font-size:13px;font-weight:600;color:rgba(255,255,255,.22);
+  transition:color .2s;cursor:default;
+}
+.trust-name:hover{color:rgba(255,255,255,.5)}
+
+/* ==================== FOOTER ==================== */
+footer{
+  padding:48px 60px;background:var(--bg);
+  border-top:1px solid var(--border);
+}
+.footer-inner{
+  max-width:1160px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:24px;flex-wrap:wrap;
+}
+.footer-brand{font-size:13.5px;color:var(--muted2);line-height:1.6}
+.footer-brand strong{color:var(--muted)}
+.footer-links{display:flex;gap:24px}
+.footer-links a{font-size:13px;color:var(--muted2);transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+/* ==================== SCROLL REVEAL ==================== */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ==================== RESPONSIVE ==================== */
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;padding:100px 24px 60px;gap:40px}
+  .hero-visual{display:none}
+  .stats-section{grid-template-columns:1fr 1fr}
+  .stat:nth-child(2){border-right:none}
+  .stat:nth-child(3){border-top:1px solid var(--border);border-right:1px solid var(--border)}
+  .two-col,.hw-grid,.tech-grid,.pricing-grid,.safety-grid{grid-template-columns:1fr}
+  .p-card.hot{transform:none}
+  .steps{grid-template-columns:1fr;gap:24px}
+  .steps::before{display:none}
+  .drone-diagram{grid-template-columns:1fr}
+  nav{width:calc(100% - 24px)}
+  .nav-links{display:none}
+  .route-section,.mission-section,.hardware-section,.how-section,.tech-section,.safety-section,.roadmap-section,.pricing-section,.cta-section{padding:80px 24px}
+  .trust-strip{padding:32px 24px;gap:24px}
+  .trust-names{gap:24px}
+  footer{padding:36px 24px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">🚁</div>
+    <span class="nav-brand">MediLift</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#route">Route</a></li>
+    <li><a href="#hardware">Hardware</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#safety">Safety</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="simulator.html" class="btn-ghost">Live Simulator →</a>
+    <a href="#pricing" class="btn-pill">Get Access</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow hero-glow-1"></div>
+  <div class="hero-glow hero-glow-2"></div>
+
+  <div class="hero-left">
+    <div class="hero-eyebrow"><span class="hero-dot"></span> Green Corridor · Ahmedabad Pilot</div>
+    <h1>When minutes<br/>decide fate,<br/>the road <span class="hl">fails.</span></h1>
+    <p class="hero-desc">
+      MediLift's autonomous AI drone delivers donated organs from SVP Airport to Civil Hospital — <strong style="color:var(--text)">5 km in 18 minutes</strong>, zero traffic, zero delays.
+    </p>
+    <div class="hero-ctas">
+      <a href="simulator.html" class="btn-hero-primary">
+        <span>▶</span> Launch Simulator
+      </a>
+      <a href="#hardware" class="btn-hero-sec">View Hardware →</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <canvas id="hero-canvas" width="600" height="400"></canvas>
+    <div style="padding:12px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted2)">
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 2s infinite"></span>Live Route Simulation</span>
+      <span>SVP Airport → Civil Hospital</span>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-section">
+  <div class="stat reveal">
+    <div class="stat-num"><span>5</span> km</div>
+    <div class="stat-label">Operational range<br/>airport to hospital</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-num"><span>18</span> min</div>
+    <div class="stat-label">SVP Airport → Civil Hospital<br/>average flight time</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-num">&lt;<span>0.5</span>m</div>
+    <div class="stat-label">AI precision landing<br/>error radius</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-num"><span>0</span></div>
+    <div class="stat-label">Road traffic disruptions<br/>per delivery mission</div>
+  </div>
+</div>
+
+<!-- ROUTE ANIMATION SECTION -->
+<section id="route" class="route-section">
+  <div class="section-header reveal">
+    <div class="eyebrow">Ahmedabad · Green Corridor</div>
+    <h2 class="section-h">SVP Airport <span class="hl">→</span> Civil Hospital</h2>
+    <p class="section-p">A real 5.4 km autonomous drone corridor. Watch the mission unfold — takeoff, cruise, precision landing.</p>
+  </div>
+  <div class="route-canvas-wrap reveal">
+    <canvas id="route-canvas" width="1000" height="480"></canvas>
+    <div class="route-meta">
+      <div class="route-meta-item"><span class="meta-dot"></span> Route: SVP International Airport → Civil Hospital Ahmedabad (Asarwa)</div>
+      <div class="route-meta-item">📏 Direct: 5.4 km &nbsp;|&nbsp; 🕐 Flight Time: ~18 min &nbsp;|&nbsp; ✈️ Altitude: 120m AGL</div>
+      <div class="route-meta-item">⚡ Speed: 45 km/h cruise &nbsp;|&nbsp; 📡 Range: 5 km</div>
+    </div>
+  </div>
+</section>
+
+<!-- MISSION -->
+<section>
+  <div class="mission-section">
+    <div class="section-header reveal">
+      <div class="eyebrow">The Mission</div>
+      <h2 class="section-h">Every hour without the organ<br/><span class="hl">costs a life.</span></h2>
+      <p class="section-p">A donated heart has a 4-6 hour viability window. Today, road Green Corridors clear traffic but cannot eliminate distance and delays.</p>
+    </div>
+    <div class="two-col">
+      <div class="mcard reveal"><div class="mcard-icon">💓</div><h3>Surat → Ahmedabad by air</h3><p>A donor heart flies from Surat in 45 minutes. But the final 5 km from airport to Civil Hospital still takes 35-50 minutes by road — even on a cleared corridor. MediLift makes it 18 minutes, airborne.</p></div>
+      <div class="mcard reveal"><div class="mcard-icon">🏥</div><h3>Surgical team ready on landing</h3><p>Our temperature-controlled bio-pod maintains 4°C ±0.5°C throughout. The organ arrives at the hospital rooftop pad. The team is already scrubbed and waiting. Zero additional delay.</p></div>
+      <div class="mcard reveal"><div class="mcard-icon">🛰️</div><h3>Zero traffic disruption</h3><p>No road closure. No police escort. No siren. The drone flies at 120m altitude above the city, navigating autonomously via GPS + computer vision. City traffic flows normally below.</p></div>
+      <div class="mcard reveal"><div class="mcard-icon">📊</div><h3>Full audit trail</h3><p>Every mission logs GPS track, altitude, temperature readings, landing accuracy, and timestamps. Full DGCA compliance documentation generated automatically after each flight.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HARDWARE -->
+<section id="hardware" class="hardware-section">
+  <div class="hardware-inner">
+    <div class="section-header reveal">
+      <div class="eyebrow">Open-Source Hardware</div>
+      <h2 class="section-h">Built from open parts.<br/><span class="hl">3×3 ft X8 Octocopter.</span></h2>
+      <p class="section-p">Assembled from commercially available, open-source-compatible components. Repaired and upgraded in India. No proprietary lock-in.</p>
+    </div>
+
+    <div class="hw-grid">
+      <div class="hw-card reveal">
+        <div class="hw-icon">🏗️</div>
+        <div class="hw-label">Frame</div>
+        <div class="hw-name">Spacedrone X8 Frame</div>
+        <div class="hw-spec">91×91 cm · Carbon Fiber</div>
+        <div class="hw-desc">Open-source parametric frame design (github.com/spacedrone). Custom CNC-cut carbon fiber arms. X8 coaxial octocopter configuration for payload redundancy.</div>
+        <a href="https://github.com/spacedrone808" target="_blank" class="hw-buy">Buy: Robu.in CF tubes ↗</a>
+      </div>
+      <div class="hw-card reveal">
+        <div class="hw-icon">⚙️</div>
+        <div class="hw-label">Motors (×8)</div>
+        <div class="hw-name">T-Motor MN501-S</div>
+        <div class="hw-spec">300KV · 30-inch props</div>
+        <div class="hw-desc">High-efficiency low-KV motors matched with 30-inch carbon propellers. Generates ~4kg thrust per motor (32kg total). Certified for heavy-lift operations.</div>
+        <a href="https://robu.in" target="_blank" class="hw-buy">Buy: Robu.in / Zbotic.in ↗</a>
+      </div>
+      <div class="hw-card reveal">
+        <div class="hw-icon">🧠</div>
+        <div class="hw-label">Flight Controller</div>
+        <div class="hw-name">Pixhawk 6X</div>
+        <div class="hw-spec">ArduCopter 4.4 firmware</div>
+        <div class="hw-desc">100% open-source firmware (ArduCopter). Triple IMU redundancy. Supports VTOL, auto-takeoff, precision landing with ArUco markers. Full MAVLink telemetry.</div>
+        <a href="https://zbotic.in" target="_blank" class="hw-buy">Buy: Zbotic.in ↗</a>
+      </div>
+      <div class="hw-card reveal">
+        <div class="hw-icon">📡</div>
+        <div class="hw-label">Telemetry Radio</div>
+        <div class="hw-name">RFD900x Long Range</div>
+        <div class="hw-spec">900 MHz · 5 km range</div>
+        <div class="hw-desc">Supports full 5 km mission range with bidirectional link. 250ms latency for real-time control. Fallback to 4G/LTE modem on Mission Planner GCS.</div>
+        <a href="https://robu.in" target="_blank" class="hw-buy">Buy: Robu.in ↗</a>
+      </div>
+      <div class="hw-card reveal">
+        <div class="hw-icon">🔋</div>
+        <div class="hw-label">Battery</div>
+        <div class="hw-name">2× Li-Ion 6S 30000mAh</div>
+        <div class="hw-spec">Parallel · 22.2V</div>
+        <div class="hw-desc">High-capacity Li-Ion packs in parallel for 35-min endurance at cruise. Samsung 21700 cells. BMS with over-temp cutoff. Charged via dual B6AC chargers.</div>
+        <a href="https://evelta.com" target="_blank" class="hw-buy">Buy: Evelta.com ↗</a>
+      </div>
+      <div class="hw-card reveal">
+        <div class="hw-icon">❄️</div>
+        <div class="hw-label">Bio-Pod</div>
+        <div class="hw-name">Custom TEC Pod</div>
+        <div class="hw-spec">4°C ±0.5°C · 2kg capacity</div>
+        <div class="hw-desc">Thermoelectric cooler (Peltier) in custom PETG-printed enclosure. Temperature logged every 10 seconds to SD card. Emergency alert at ±1°C deviation from setpoint.</div>
+        <a href="https://indianrobostore.com" target="_blank" class="hw-buy">Buy parts: Indian Robo Store ↗</a>
+      </div>
+    </div>
+
+    <!-- Drone Specs Table -->
+    <div class="drone-diagram reveal">
+      <div>
+        <!-- SVG Drone Diagram (top view) -->
+        <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;margin:0 auto;display:block">
+          <defs>
+            <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <radialGradient id="bodyGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#1a2a3a"/>
+              <stop offset="100%" stop-color="#0a1520"/>
+            </radialGradient>
+          </defs>
+          <!-- Arms -->
+          <line x1="160" y1="160" x2="60" y2="60" stroke="#334" stroke-width="8" stroke-linecap="round"/>
+          <line x1="160" y1="160" x2="260" y2="60" stroke="#334" stroke-width="8" stroke-linecap="round"/>
+          <line x1="160" y1="160" x2="60" y2="260" stroke="#334" stroke-width="8" stroke-linecap="round"/>
+          <line x1="160" y1="160" x2="260" y2="260" stroke="#334" stroke-width="8" stroke-linecap="round"/>
+          <!-- Rotors (lower) -->
+          <circle cx="60" cy="60" r="38" fill="none" stroke="#223" stroke-width="2"/>
+          <circle cx="260" cy="60" r="38" fill="none" stroke="#223" stroke-width="2"/>
+          <circle cx="60" cy="260" r="38" fill="none" stroke="#223" stroke-width="2"/>
+          <circle cx="260" cy="260" r="38" fill="none" stroke="#223" stroke-width="2"/>
+          <!-- Rotors (upper / coaxial) -->
+          <circle cx="60" cy="60" r="28" fill="none" stroke="rgba(0,229,160,.5)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <circle cx="260" cy="60" r="28" fill="none" stroke="rgba(0,229,160,.5)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <circle cx="60" cy="260" r="28" fill="none" stroke="rgba(0,229,160,.5)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <circle cx="260" cy="260" r="28" fill="none" stroke="rgba(0,229,160,.5)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <!-- Motor hubs -->
+          <circle cx="60" cy="60" r="10" fill="#00e5a0" filter="url(#glow)" opacity=".9"/>
+          <circle cx="260" cy="60" r="10" fill="#00e5a0" filter="url(#glow)" opacity=".9"/>
+          <circle cx="60" cy="260" r="10" fill="#00e5a0" filter="url(#glow)" opacity=".9"/>
+          <circle cx="260" cy="260" r="10" fill="#00e5a0" filter="url(#glow)" opacity=".9"/>
+          <!-- Body -->
+          <rect x="128" y="128" width="64" height="64" rx="12" fill="url(#bodyGrad)" stroke="#334" stroke-width="1.5"/>
+          <!-- FC logo -->
+          <text x="160" y="156" text-anchor="middle" fill="rgba(0,229,160,.7)" font-size="10" font-family="monospace" font-weight="bold">PX6X</text>
+          <text x="160" y="170" text-anchor="middle" fill="rgba(255,255,255,.3)" font-size="8" font-family="monospace">FC</text>
+          <!-- Dimension lines -->
+          <line x1="20" y1="60" x2="20" y2="260" stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-dasharray="3 3"/>
+          <text x="10" y="165" fill="rgba(255,255,255,.3)" font-size="9" font-family="monospace" text-anchor="middle" transform="rotate(-90,10,165)">91 cm</text>
+          <line x1="60" y1="300" x2="260" y2="300" stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-dasharray="3 3"/>
+          <text x="160" y="314" fill="rgba(255,255,255,.3)" font-size="9" font-family="monospace" text-anchor="middle">91 cm</text>
+          <!-- Front indicator -->
+          <polygon points="160,118 152,132 168,132" fill="var(--accent,#00e5a0)" opacity=".8"/>
+          <text x="160" y="112" text-anchor="middle" fill="rgba(0,229,160,.6)" font-size="8" font-family="monospace">FWD</text>
+          <!-- Label -->
+          <text x="160" y="22" text-anchor="middle" fill="rgba(0,229,160,.5)" font-size="10" font-family="'Inter',sans-serif" font-weight="600">X8 OCTOCOPTER · TOP VIEW</text>
+        </svg>
+      </div>
+      <div>
+        <h3 style="font-family:var(--font2);font-size:22px;font-weight:700;margin-bottom:24px;letter-spacing:-.02em">Full Specifications</h3>
+        <div class="drone-specs-list">
+          <div class="spec-row"><span class="spec-key">Configuration</span><span class="spec-val">X8 Coaxial Octocopter</span></div>
+          <div class="spec-row"><span class="spec-key">Footprint</span><span class="spec-val green">3×3 ft (91×91 cm)</span></div>
+          <div class="spec-row"><span class="spec-key">Max Payload</span><span class="spec-val green">2.0 kg</span></div>
+          <div class="spec-row"><span class="spec-key">Operational Range</span><span class="spec-val green">5 km</span></div>
+          <div class="spec-row"><span class="spec-key">Cruise Speed</span><span class="spec-val">45 km/h</span></div>
+          <div class="spec-row"><span class="spec-key">Max Speed</span><span class="spec-val">72 km/h</span></div>
+          <div class="spec-row"><span class="spec-key">Endurance</span><span class="spec-val">35 min</span></div>
+          <div class="spec-row"><span class="spec-key">Cruise Altitude</span><span class="spec-val">120m AGL</span></div>
+          <div class="spec-row"><span class="spec-key">Landing Accuracy</span><span class="spec-val green">&lt;0.5 m</span></div>
+          <div class="spec-row"><span class="spec-key">Autopilot</span><span class="spec-val blue">Pixhawk 6X / ArduCopter</span></div>
+          <div class="spec-row"><span class="spec-key">Frame Source</span><span class="spec-val blue">Spacedrone (Open Source)</span></div>
+          <div class="spec-row"><span class="spec-key">Bio-Pod Temp</span><span class="spec-val green">4°C ±0.5°C</span></div>
+        </div>
+        <div class="os-note" style="margin-top:20px">
+          🛠️ Frame design based on open-source <a href="https://github.com/spacedrone808" target="_blank">Spacedrone</a> project — replicated at 3×3 ft scale. Firmware: <a href="https://ardupilot.org" target="_blank" style="color:var(--accent2)">ArduCopter 4.4</a> (Apache-2.0 license). Full BOM and build guide on request.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="how-section">
+  <div class="section-header reveal" style="max-width:640px;margin:0 auto 64px;text-align:center">
+    <div class="eyebrow">Green Corridor Protocol</div>
+    <h2 class="section-h">Airport to OR<br/>in <span class="hl">5 steps.</span></h2>
+  </div>
+  <div class="steps">
+    <div class="step reveal"><div class="step-num">01</div><h4>Organ Received</h4><p>Ground crew loads bio-pod. RFID handoff verified. Dispatch confirmed via hospital API.</p></div>
+    <div class="step reveal"><div class="step-num">02</div><h4>Autonomous Takeoff</h4><p>Drone lifts off on DGCA-approved corridor. Climbs to 120m AGL, clears airport zone.</p></div>
+    <div class="step reveal"><div class="step-num">03</div><h4>5 km Cruise</h4><p>AI navigates at 45 km/h on GPS track. Telemetry streamed live. ETA visible to hospital.</p></div>
+    <div class="step reveal"><div class="step-num">04</div><h4>Precision Landing</h4><p>ArUco marker detected at 20m altitude. PD controller guides to &lt;0.5m accuracy.</p></div>
+    <div class="step reveal"><div class="step-num">05</div><h4>Organ Delivered</h4><p>Pod released. Surgical team collects. Digital chain-of-custody signed. Drone RTBs.</p></div>
+  </div>
+</section>
+
+<!-- TECH -->
+<section id="technology" class="tech-section">
+  <div class="tech-inner">
+    <div class="section-header reveal" style="max-width:640px;margin:0 auto 64px;text-align:center">
+      <div class="eyebrow">Technology Stack</div>
+      <h2 class="section-h">Built for reliability,<br/><span class="hl">not demos.</span></h2>
+    </div>
+    <div class="tech-grid">
+      <div class="tech-card reveal"><div class="tc-icon">🎯</div><div class="tc-tag">Precision Landing</div><div class="tc-title">ArUco + PD Controller</div><div class="tc-desc">Rooftop ArUco markers detected at 20m. Proportional-derivative controller achieves sub-50cm landing accuracy. Tested in wind conditions up to 20 km/h.</div></div>
+      <div class="tech-card reveal"><div class="tc-icon">🧠</div><div class="tc-tag">AI Navigation</div><div class="tc-title">5-State Autonomous FSM</div><div class="tc-desc">TAKEOFF → CRUISE → NAVIGATE → DESCEND → LAND. Redundant GPS + barometric hold. Manual RPIC override maintains legal compliance at all times.</div></div>
+      <div class="tech-card reveal"><div class="tc-icon">❄️</div><div class="tc-tag">Payload</div><div class="tc-title">Active Bio-Pod · 4°C</div><div class="tc-desc">Peltier TEC unit with PID temperature control. Logs every 10 seconds. Auto-abort and emergency landing if ±1°C deviation detected. 2kg capacity.</div></div>
+      <div class="tech-card reveal"><div class="tc-icon">🛡️</div><div class="tc-tag">Geofencing</div><div class="tc-title">DGCA-Compliant Corridors</div><div class="tc-desc">Hard-coded 5 km airspace corridor. No-fly database updated OTA. Automatic RTB within 200ms of boundary breach. DigitalSky platform registered.</div></div>
+      <div class="tech-card reveal"><div class="tc-icon">📡</div><div class="tc-tag">Telemetry</div><div class="tc-title">Live Mission Dashboard</div><div class="tc-desc">RFD900x 900MHz link + 4G fallback. Hospital dashboard shows GPS position, ETA, altitude, bio-pod temperature, battery SOC — updated every 500ms.</div></div>
+      <div class="tech-card reveal"><div class="tc-icon">🔒</div><div class="tc-tag">Safety</div><div class="tc-title">Triple-Redundant Failsafes</div><div class="tc-desc">Motor redundancy (X8 = any 2 motors can fail). Hover-in-place on comms loss. Emergency descent to pre-mapped safe zones every 500m along route.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SAFETY -->
+<section id="safety" class="safety-section">
+  <div class="section-header reveal" style="max-width:640px;margin:0 auto 64px;text-align:center">
+    <div class="eyebrow">Safety Framework</div>
+    <h2 class="section-h">If it can fail,<br/>we've <span class="hl">planned for it.</span></h2>
+  </div>
+  <div class="safety-grid">
+    <div class="safety-card reveal"><div class="s-icon">🚧</div><div class="s-text"><h4>Geofence Enforcement</h4><p>Hard-coded 5 km corridor boundaries. Drone cannot exit permitted airspace. RTB triggered within 200ms of breach detection.</p></div></div>
+    <div class="safety-card reveal"><div class="s-icon">⬇️</div><div class="s-text"><h4>Low-Altitude Protocol</h4><p>120m AGL minimum cruise. All maneuvers within sub-150m DGCA exemption zone. No overflights of hospitals, schools, or dense areas.</p></div></div>
+    <div class="safety-card reveal"><div class="s-icon">👨‍✈️</div><div class="s-text"><h4>Remote Pilot In Command</h4><p>Licensed RPIC monitors every flight via 4G GCS link. Full manual override available. Physical RC backup for missions within 2 km range.</p></div></div>
+    <div class="safety-card reveal"><div class="s-icon">❄️</div><div class="s-text"><h4>Bio-Payload Integrity</h4><p>Temperature logged every 10s. Alert at ±1°C. Auto-abort and emergency landing if cooling failure detected. Organ integrity preserved in all scenarios.</p></div></div>
+    <div class="safety-card reveal"><div class="s-icon">⚡</div><div class="s-text"><h4>Power Redundancy</h4><p>X8 octocopter can maintain controlled flight after losing any 2 motors. Dual battery packs. Low-battery RTB trigger at 25% capacity.</p></div></div>
+    <div class="safety-card reveal"><div class="s-icon">📋</div><div class="s-text"><h4>DGCA Compliance</h4><p>NPNT compliant. DigitalSky registered. UAOP filing in progress. Full flight logs submitted to DGCA within 24 hours of each mission.</p></div></div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section class="roadmap-section">
+  <div class="roadmap-inner">
+    <div class="section-header reveal" style="text-align:center">
+      <div class="eyebrow">Roadmap</div>
+      <h2 class="section-h">Where we're <span class="hl">going.</span></h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-item done reveal"><div class="tl-phase">✅ Aug 2026 — Completed</div><div class="tl-title">Web simulator + SaaS platform built</div><div class="tl-desc">Full 3D physics-based autonomous delivery simulator. ArUco precision landing. Bio-pod payload system. Real-time telemetry. Landing accuracy measurement.</div></div>
+      <div class="tl-item active reveal"><div class="tl-phase">🔵 Q4 2026 — Active</div><div class="tl-title">Hardware prototype + DGCA registration</div><div class="tl-desc">Assemble first X8 octocopter (3×3 ft). Integrate bio-pod. DGCA UAOP filing for Ahmedabad pilot corridor: SVP Airport → Civil Hospital, 5.4 km.</div></div>
+      <div class="tl-item reveal"><div class="tl-phase">Q1 2027</div><div class="tl-title">3-hospital Gujarat pilot program</div><div class="tl-desc">Partner with IKDRC, Civil Hospital Ahmedabad, Sola Civil. Deploy rooftop pads. Run 20 test flights for DGCA approval and hospital board sign-off.</div></div>
+      <div class="tl-item reveal"><div class="tl-phase">Q3 2027</div><div class="tl-title">First live organ delivery — commercial ops</div><div class="tl-desc">Real organ delivery mission. Revenue model active: ₹2.4L/year/route + hardware lease + 24/7 mission control subscription for hospital networks.</div></div>
+      <div class="tl-item reveal"><div class="tl-phase">2028</div><div class="tl-title">Multi-city expansion across India</div><div class="tl-desc">Mumbai, Chennai, Hyderabad, Delhi. City-wide drone corridors. Integration with National Organ &amp; Tissue Transplant Organization (NOTTO) and state health departments.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="pricing-section">
+  <div class="section-header reveal" style="max-width:640px;margin:0 auto 64px;text-align:center">
+    <div class="eyebrow">B2B Pricing</div>
+    <h2 class="section-h">For hospital networks<br/>and <span class="hl">transplant trusts.</span></h2>
+  </div>
+  <div class="pricing-grid">
+    <div class="p-card reveal"><div class="p-tier">Pilot Program</div><div class="p-price">₹0</div><div class="p-per">90-day evaluation</div><ul class="p-features"><li>1 delivery route</li><li>Simulator access</li><li>Architecture review</li><li>DGCA filing guidance</li><li>Email support</li></ul><button class="btn-p btn-p-out" onclick="alert('Contact: hello@medilift.in')">Request Pilot</button></div>
+    <div class="p-card hot reveal"><div class="p-tier">Hospital Network</div><div class="p-price">₹2.4L</div><div class="p-per">per year · per route</div><ul class="p-features"><li>Unlimited missions</li><li>24/7 mission control</li><li>Live telemetry dashboard</li><li>Temperature audit logs</li><li>RPIC included</li><li>DGCA compliance</li><li>Rooftop pad install</li><li>5 km range coverage</li></ul><button class="btn-p btn-p-green" onclick="alert('Contact: hello@medilift.in')">Get Started</button></div>
+    <div class="p-card reveal"><div class="p-tier">State Health Dept.</div><div class="p-price">Custom</div><div class="p-per">Multi-city deployment</div><ul class="p-features"><li>City-wide drone corridors</li><li>Dedicated fleet mgmt.</li><li>NOTTO API integration</li><li>Custom geofence zones</li><li>Onsite team + training</li><li>99.9% uptime SLA</li></ul><button class="btn-p btn-p-out" onclick="alert('Contact: hello@medilift.in')">Talk to Us</button></div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<div class="trust-strip reveal">
+  <span class="trust-label">Targeting</span>
+  <div class="trust-names">
+    <span class="trust-name">IKDRC Ahmedabad</span>
+    <span class="trust-name">Civil Hospital Gujarat</span>
+    <span class="trust-name">DGCA India</span>
+    <span class="trust-name">MOHAN Foundation</span>
+    <span class="trust-name">NOTTO India</span>
+    <span class="trust-name">DigitalSky Platform</span>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Minutes save lives.<br/><span style="color:var(--accent)">Let's not waste them.</span></h2>
+  <p>Deploy the first 5 km autonomous organ delivery network in India. Talk to our team today.</p>
+  <div class="cta-btns">
+    <a href="simulator.html" class="btn-cta-main">Launch Live Demo</a>
+    <a href="mailto:hello@medilift.in" class="btn-cta-out">Contact Us →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <strong>MediLift</strong> · AI Precision Organ Delivery Drones · Ahmedabad, India<br/>
+      © 2026. DGCA compliant. All mission data logged and auditable.<br/>
+      <span style="color:var(--muted2);font-size:12px">Frame: Spacedrone (Open Source) · Autopilot: ArduCopter (Apache-2.0) · Range: 5 km · Payload: 2 kg</span>
+    </div>
+    <div class="footer-links">
+      <a href="#route">Route</a>
+      <a href="#hardware">Hardware</a>
+      <a href="simulator.html">Simulator</a>
+      <a href="#safety">Safety</a>
+      <a href="mailto:hello@medilift.in">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SCROLL REVEAL
+// ============================================================
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ============================================================
+// CANVAS DRAWING UTILITIES
+// ============================================================
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+// ============================================================
+// HERO CANVAS — mini route animation
+// ============================================================
+const heroCanvas = document.getElementById('hero-canvas');
+const hCtx = heroCanvas.getContext('2d');
+
+function resizeHeroCanvas() {
+  const wrap = heroCanvas.parentElement;
+  heroCanvas.width = wrap.clientWidth * devicePixelRatio;
+  heroCanvas.height = 400 * devicePixelRatio;
+  heroCanvas.style.height = '400px';
+  hCtx.scale(devicePixelRatio, devicePixelRatio);
+}
+window.addEventListener('resize', () => { resizeHeroCanvas(); });
+resizeHeroCanvas();
+
+// ============================================================
+// ROUTE CANVAS — full Ahmedabad map animation
+// ============================================================
+const routeCanvas = document.getElementById('route-canvas');
+const rCtx = routeCanvas.getContext('2d');
+
+function resizeRouteCanvas() {
+  const wrap = routeCanvas.parentElement;
+  routeCanvas.width = wrap.clientWidth * devicePixelRatio;
+  routeCanvas.height = 480 * devicePixelRatio;
+  routeCanvas.style.height = '480px';
+  rCtx.scale(devicePixelRatio, devicePixelRatio);
+}
+window.addEventListener('resize', () => { resizeRouteCanvas(); });
+resizeRouteCanvas();
+
+// ============================================================
+// SHARED: Draw a mini drone top-view at (x,y), scale, rotation
+// ============================================================
+function drawDrone(ctx, x, y, scale, rotation, rotorAngle) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(rotation);
+  ctx.scale(scale, scale);
+
+  const armLen = 22;
+  const armW   = 3;
+  const rotorR = 14;
+
+  // Arms (X pattern)
+  const angles = [Math.PI/4, -Math.PI/4, 3*Math.PI/4, -3*Math.PI/4];
+  const motorPos = angles.map(a => ({ x: Math.cos(a)*armLen, y: Math.sin(a)*armLen }));
+
+  ctx.strokeStyle = '#445566';
+  ctx.lineWidth = armW;
+  ctx.lineCap = 'round';
+  motorPos.forEach(mp => {
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(mp.x, mp.y); ctx.stroke();
+  });
+
+  // Rotors
+  motorPos.forEach((mp, i) => {
+    const dir = i % 2 === 0 ? 1 : -1;
+    ctx.save();
+    ctx.translate(mp.x, mp.y);
+
+    // Rotor disc (transparent ring)
+    ctx.beginPath();
+    ctx.arc(0, 0, rotorR, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(0,229,160,0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(0,229,160,0.06)';
+    ctx.fill();
+
+    // Spinning blades
+    ctx.rotate(rotorAngle * dir);
+    for (let b = 0; b < 2; b++) {
+      ctx.rotate(Math.PI);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.ellipse(rotorR * 0.7, 0, rotorR * 0.85, 3, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(200,220,255,0.55)';
+      ctx.fill();
+    }
+    // Hub
+    ctx.beginPath(); ctx.arc(0, 0, 3.5, 0, Math.PI*2);
+    ctx.fillStyle = '#00e5a0'; ctx.fill();
+
+    ctx.restore();
+  });
+
+  // Body
+  const bSize = 9;
+  ctx.fillStyle = '#1a2a3a';
+  ctx.beginPath();
+  ctx.roundRect(-bSize, -bSize, bSize*2, bSize*2, 4);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,229,160,0.4)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Front indicator
+  ctx.fillStyle = '#00e5a0';
+  ctx.beginPath();
+  ctx.moveTo(0, -bSize - 4);
+  ctx.lineTo(-3, -bSize);
+  ctx.lineTo(3, -bSize);
+  ctx.closePath();
+  ctx.fill();
+
+  // Glow under body
+  const grd = ctx.createRadialGradient(0, 0, 0, 0, 0, 20);
+  grd.addColorStop(0, 'rgba(0,229,160,0.25)');
+  grd.addColorStop(1, 'rgba(0,229,160,0)');
+  ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI*2);
+  ctx.fillStyle = grd; ctx.fill();
+
+  ctx.restore();
+}
+
+// ============================================================
+// SHARED: Draw building with label
+// ============================================================
+function drawBuilding(ctx, x, y, w, h, color, label, sublabel, icon) {
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath(); ctx.roundRect(x - w/2 + 3, y - h/2 + 3, w, h, 6); ctx.fill();
+
+  // Building
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.roundRect(x - w/2, y - h/2, w, h, 6); ctx.fill();
+
+  // Windows
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  for (let wy = 0; wy < 3; wy++) {
+    for (let wx = 0; wx < 3; wx++) {
+      ctx.fillRect(x - w/2 + 6 + wx*10, y - h/2 + 6 + wy*10, 7, 6);
+    }
+  }
+
+  // Icon
+  ctx.font = '18px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(icon, x, y + 5);
+
+  // Label box
+  ctx.fillStyle = 'rgba(10,15,26,0.92)';
+  const lw = Math.max(ctx.measureText(label).width + 20, ctx.measureText(sublabel).width + 20);
+  ctx.beginPath(); ctx.roundRect(x - lw/2, y + h/2 + 8, lw, 36, 6); ctx.fill();
+  ctx.strokeStyle = 'rgba(0,229,160,0.4)'; ctx.lineWidth = 1; ctx.stroke();
+
+  ctx.fillStyle = '#f0f2f6';
+  ctx.font = 'bold 12px Inter, sans-serif';
+  ctx.fillText(label, x, y + h/2 + 22);
+  ctx.fillStyle = 'rgba(0,229,160,0.8)';
+  ctx.font = '10px Inter, sans-serif';
+  ctx.fillText(sublabel, x, y + h/2 + 35);
+}
+
+// ============================================================
+// ROUTE BEZIER CURVE
+// ============================================================
+// SVP Airport: top-right area; Civil Hospital: center-left
+// Canvas is ~1000 wide × 480 tall (logical pixels)
+const routePts = {
+  airport: { x: 0.72, y: 0.18 },  // relative to canvas
+  hospital: { x: 0.24, y: 0.72 },
+  ctrl1:   { x: 0.72, y: 0.5  },
+  ctrl2:   { x: 0.45, y: 0.72 },
+};
+
+function getRoutePoint(t, W, H) {
+  const p0 = { x: routePts.airport.x * W, y: routePts.airport.y * H };
+  const p1 = { x: routePts.ctrl1.x * W,  y: routePts.ctrl1.y * H };
+  const p2 = { x: routePts.ctrl2.x * W,  y: routePts.ctrl2.y * H };
+  const p3 = { x: routePts.hospital.x * W, y: routePts.hospital.y * H };
+
+  const u = 1 - t;
+  return {
+    x: u*u*u*p0.x + 3*u*u*t*p1.x + 3*u*t*t*p2.x + t*t*t*p3.x,
+    y: u*u*u*p0.y + 3*u*u*t*p1.y + 3*u*t*t*p2.y + t*t*t*p3.y,
+  };
+}
+
+function getRouteTangent(t, W, H) {
+  const p0 = { x: routePts.airport.x * W, y: routePts.airport.y * H };
+  const p1 = { x: routePts.ctrl1.x * W,  y: routePts.ctrl1.y * H };
+  const p2 = { x: routePts.ctrl2.x * W,  y: routePts.ctrl2.y * H };
+  const p3 = { x: routePts.hospital.x * W, y: routePts.hospital.y * H };
+
+  const u = 1 - t;
+  const dx = 3*(u*u*(p1.x-p0.x) + 2*u*t*(p2.x-p1.x) + t*t*(p3.x-p2.x));
+  const dy = 3*(u*u*(p1.y-p0.y) + 2*u*t*(p2.y-p1.y) + t*t*(p3.y-p2.y));
+  return Math.atan2(dy, dx);
+}
+
+// ============================================================
+// MAIN ANIMATION
+// ============================================================
+let animT = 0;          // 0=airport, 1=hospital
+let animState = 'fly';  // fly | pause_land | pause_start
+let animPauseTimer = 0;
+let rotorAngle = 0;
+let trailPts = [];
+const TRAIL_MAX = 60;
+
+function drawCityBackground(ctx, W, H) {
+  // Dark gradient background
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#050b18');
+  bg.addColorStop(1, '#0a1525');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // City watermark text
+  ctx.save();
+  ctx.globalAlpha = 0.03;
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 120px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('AHMEDABAD', W/2, H/2);
+  ctx.restore();
+
+  // Grid lines (city streets, very subtle)
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  for (let gx = 0; gx < W; gx += 40) {
+    ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke();
+  }
+  for (let gy = 0; gy < H; gy += 40) {
+    ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke();
+  }
+
+  // City block silhouettes
+  const blocks = [
+    [0.35,0.35,40,60,'#0d1a2e'],[0.42,0.28,30,50,'#0c1828'],[0.5,0.4,50,40,'#0b1726'],
+    [0.55,0.55,35,45,'#0d1a2e'],[0.6,0.3,25,55,'#0a1522'],[0.3,0.5,45,35,'#0c1828'],
+    [0.45,0.6,30,40,'#0b1726'],[0.65,0.48,40,30,'#0d1a2e'],[0.38,0.62,25,45,'#0a1522'],
+    [0.52,0.25,20,35,'#0c1828'],[0.28,0.38,35,40,'#0b1726'],
+  ];
+  blocks.forEach(([rx, ry, bw, bh, c]) => {
+    ctx.fillStyle = c;
+    ctx.fillRect(rx*W - bw/2, ry*H - bh/2, bw, bh);
+  });
+}
+
+function drawRouteCorridorLine(ctx, W, H, drawnT) {
+  // Glowing dotted path (full route faded)
+  ctx.save();
+  ctx.setLineDash([8, 10]);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = 'rgba(0,229,160,0.12)';
+  ctx.beginPath();
+  const p0 = getRoutePoint(0, W, H);
+  ctx.moveTo(p0.x, p0.y);
+  for (let i = 1; i <= 60; i++) {
+    const pt = getRoutePoint(i/60, W, H);
+    ctx.lineTo(pt.x, pt.y);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Drawn (traveled) portion
+  if (drawnT > 0) {
+    ctx.lineWidth = 3;
+    const grad = ctx.createLinearGradient(
+      getRoutePoint(0,W,H).x, getRoutePoint(0,W,H).y,
+      getRoutePoint(drawnT,W,H).x, getRoutePoint(drawnT,W,H).y
+    );
+    grad.addColorStop(0, 'rgba(0,229,160,0.0)');
+    grad.addColorStop(1, 'rgba(0,229,160,0.7)');
+    ctx.strokeStyle = grad;
+    ctx.beginPath();
+    const s0 = getRoutePoint(0, W, H);
+    ctx.moveTo(s0.x, s0.y);
+    for (let i = 1; i <= Math.floor(drawnT*60); i++) {
+      const pt = getRoutePoint(i/60, W, H);
+      ctx.lineTo(pt.x, pt.y);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawTrail(ctx) {
+  if (trailPts.length < 2) return;
+  for (let i = 1; i < trailPts.length; i++) {
+    const alpha = (i / trailPts.length) * 0.6;
+    ctx.beginPath();
+    ctx.moveTo(trailPts[i-1].x, trailPts[i-1].y);
+    ctx.lineTo(trailPts[i].x, trailPts[i].y);
+    ctx.strokeStyle = `rgba(0,229,160,${alpha})`;
+    ctx.lineWidth = 2.5 * (i / trailPts.length);
+    ctx.stroke();
+  }
+}
+
+function drawEndpointPulse(ctx, x, y, t, color) {
+  const r1 = 12 + 8 * Math.sin(t * 3);
+  const r2 = 22 + 8 * Math.sin(t * 3 + 1);
+  ctx.beginPath(); ctx.arc(x, y, r2, 0, Math.PI*2);
+  ctx.fillStyle = `rgba(${color},0.05)`; ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y, r1, 0, Math.PI*2);
+  ctx.fillStyle = `rgba(${color},0.12)`; ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2);
+  ctx.fillStyle = `rgb(${color})`; ctx.fill();
+}
+
+function drawDistanceLabel(ctx, W, H) {
+  // Find midpoint of route
+  const mid = getRoutePoint(0.5, W, H);
+  ctx.save();
+  ctx.fillStyle = 'rgba(8,13,21,0.88)';
+  ctx.strokeStyle = 'rgba(0,229,160,0.35)';
+  ctx.lineWidth = 1;
+  const lw = 140, lh = 34;
+  ctx.beginPath(); ctx.roundRect(mid.x - lw/2, mid.y - lh/2, lw, lh, 8);
+  ctx.fill(); ctx.stroke();
+
+  ctx.fillStyle = '#00e5a0';
+  ctx.font = 'bold 12px Inter, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('5.4 km · 18 min', mid.x, mid.y - 4);
+  ctx.fillStyle = 'rgba(240,242,246,0.4)';
+  ctx.font = '10px Inter, sans-serif';
+  ctx.fillText('120m AGL · 45 km/h cruise', mid.x, mid.y + 9);
+  ctx.restore();
+}
+
+let lastTime = 0;
+const FLY_DURATION = 6.0;  // seconds to fly from airport to hospital
+const PAUSE_DURATION = 1.5; // seconds to pause at each end
+
+function animateRoute(timestamp) {
+  const dt = Math.min((timestamp - lastTime) / 1000, 0.05);
+  lastTime = timestamp;
+  rotorAngle += dt * 8;
+
+  // Canvas dimensions
+  const W = routeCanvas.width / devicePixelRatio;
+  const H = routeCanvas.height / devicePixelRatio;
+  const hW = heroCanvas.width / devicePixelRatio;
+  const hH = heroCanvas.height / devicePixelRatio;
+
+  // State machine
+  if (animState === 'fly') {
+    animT += dt / FLY_DURATION;
+    if (animT >= 1) {
+      animT = 1;
+      animState = 'pause_land';
+      animPauseTimer = 0;
+    }
+  } else if (animState === 'pause_land') {
+    animPauseTimer += dt;
+    if (animPauseTimer >= PAUSE_DURATION) {
+      animT = 0;
+      trailPts = [];
+      animState = 'pause_start';
+      animPauseTimer = 0;
+    }
+  } else if (animState === 'pause_start') {
+    animPauseTimer += dt;
+    if (animPauseTimer >= PAUSE_DURATION * 0.5) {
+      animState = 'fly';
+    }
+  }
+
+  // Ease-in-out
+  const eased = animT < 0.5
+    ? 4 * animT * animT * animT
+    : 1 - Math.pow(-2 * animT + 2, 3) / 2;
+
+  // Current drone position
+  const dronePos = getRoutePoint(eased, W, H);
+  const droneTangent = getRouteTangent(eased, W, H);
+
+  // Update trail
+  if (animState === 'fly') {
+    trailPts.push({ x: dronePos.x, y: dronePos.y });
+    if (trailPts.length > TRAIL_MAX) trailPts.shift();
+  }
+
+  // ── DRAW FULL ROUTE CANVAS ──
+  rCtx.clearRect(0, 0, W, H);
+  drawCityBackground(rCtx, W, H);
+  drawRouteCorridorLine(rCtx, W, H, eased);
+  drawTrail(rCtx);
+
+  // Airport position
+  const airportPos = getRoutePoint(0, W, H);
+  const hospitalPos = getRoutePoint(1, W, H);
+
+  // Endpoint pulses
+  drawEndpointPulse(rCtx, airportPos.x, airportPos.y, timestamp/1000, '0,229,160');
+  drawEndpointPulse(rCtx, hospitalPos.x, hospitalPos.y, timestamp/1000 + 1, '0,153,255');
+
+  // Buildings
+  drawBuilding(rCtx, airportPos.x, airportPos.y - 70, 90, 44, '#1a2d4a', 'SVP International Airport', 'Ahmedabad · AMD', '✈️');
+  drawBuilding(rCtx, hospitalPos.x, hospitalPos.y - 70, 90, 44, '#1a3a2a', 'Civil Hospital', 'Asarwa, Ahmedabad', '🏥');
+
+  // Distance label at midpoint
+  drawDistanceLabel(rCtx, W, H);
+
+  // Drone
+  if (animState !== 'pause_start') {
+    drawDrone(rCtx, dronePos.x, dronePos.y, 1.5, droneTangent + Math.PI/2, rotorAngle);
+  } else {
+    // Show drone at airport
+    const startPos = getRoutePoint(0, W, H);
+    drawDrone(rCtx, startPos.x, startPos.y, 1.5, -Math.PI/2, rotorAngle);
+  }
+
+  // Landing success flash at hospital
+  if (animState === 'pause_land' && animPauseTimer < 0.8) {
+    const hp = getRoutePoint(1, W, H);
+    const alpha = Math.max(0, 1 - animPauseTimer / 0.8);
+    rCtx.beginPath(); rCtx.arc(hp.x, hp.y, 30 + animPauseTimer * 40, 0, Math.PI*2);
+    rCtx.fillStyle = `rgba(0,229,160,${alpha * 0.2})`; rCtx.fill();
+  }
+
+  // ── DRAW HERO CANVAS (smaller) ──
+  hCtx.clearRect(0, 0, hW, hH);
+  // Scale for hero
+  const scaleX = hW / W;
+  const scaleY = hH / H;
+  const scale = Math.min(scaleX, scaleY);
+
+  hCtx.save();
+  hCtx.scale(scale, scale);
+  drawCityBackground(hCtx, W, H);
+  drawRouteCorridorLine(hCtx, W, H, eased);
+
+  // Trail scaled
+  if (trailPts.length > 1) {
+    for (let i = 1; i < trailPts.length; i++) {
+      const a = (i / trailPts.length) * 0.5;
+      hCtx.beginPath();
+      hCtx.moveTo(trailPts[i-1].x, trailPts[i-1].y);
+      hCtx.lineTo(trailPts[i].x, trailPts[i].y);
+      hCtx.strokeStyle = `rgba(0,229,160,${a})`;
+      hCtx.lineWidth = 2;
+      hCtx.stroke();
+    }
+  }
+
+  // Pulsing endpoints
+  drawEndpointPulse(hCtx, airportPos.x, airportPos.y, timestamp/1000, '0,229,160');
+  drawEndpointPulse(hCtx, hospitalPos.x, hospitalPos.y, timestamp/1000 + 1, '0,153,255');
+
+  // Mini labels
+  hCtx.fillStyle = 'rgba(0,229,160,0.8)';
+  hCtx.font = 'bold 11px Inter, sans-serif';
+  hCtx.textAlign = 'center';
+  hCtx.fillText('✈ SVP Airport', airportPos.x, airportPos.y - 18);
+  hCtx.fillStyle = 'rgba(0,153,255,0.8)';
+  hCtx.fillText('🏥 Civil Hospital', hospitalPos.x, hospitalPos.y - 18);
+
+  if (animState !== 'pause_start') {
+    drawDrone(hCtx, dronePos.x, dronePos.y, 1.2, droneTangent + Math.PI/2, rotorAngle);
+  }
+
+  hCtx.restore();
+
+  requestAnimationFrame(animateRoute);
+}
+requestAnimationFrame(animateRoute);
+</script>
+</body>
+</html>

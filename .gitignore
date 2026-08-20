@@ -1,0 +1,9 @@
+# Python scratch & temporary build scripts
+build_*.py
+generate_*.py
+restore_*.py
+inject.py
+*.pyc
+__pycache__/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚁</text></svg>">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MediLift 3D — Real-World Ahmedabad Organ Corridor Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #020617;
+      color: #f8fafc;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      touch-action: none;
+      height: 100vh;
+      height: 100dvh;
+    }
+    canvas#c { display: block; width: 100vw; height: 100vh; height: 100dvh; }
+
+    /* ── AVIONICS GLASS UI ── */
+    #hud-overlay {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      display: flex; flex-direction: column;
+      justify-content: space-between;
+      padding: 14px;
+      z-index: 100;
+    }
+
+    /* TOP BAR */
+    .top-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; flex-wrap: wrap;
+    }
+    .glass-pill {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 100px;
+      backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      pointer-events: auto;
+    }
+
+    .brand-container {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 16px;
+    }
+    .brand-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, #00b37e, #00e5a0);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; box-shadow: 0 0 16px rgba(0, 229, 160, 0.45);
+      flex-shrink: 0;
+    }
+    .brand-text { font-size: 13.5px; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+    .brand-sub { font-size: 10.5px; color: #94a3b8; font-weight: 500; }
+
+    /* Stepper */
+    .corridor-stepper {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+    }
+    .step-item {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 700; color: #64748b;
+      transition: color 0.3s;
+    }
+    .step-item.active { color: #00e5a0; }
+    .step-item.done { color: #38bdf8; }
+    .step-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #334155;
+    }
+    .step-item.active .step-dot {
+      background: #00e5a0; box-shadow: 0 0 10px #00e5a0;
+      animation: pulseDot 1.4s infinite;
+    }
+    .step-item.done .step-dot { background: #38bdf8; }
+    @keyframes pulseDot { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.4);opacity:0.4;} }
+    .step-line { width: 10px; height: 1.5px; background: rgba(255,255,255,0.12); }
+
+    /* Camera Switcher & Toolbars */
+    .cam-toolbar, .env-toolbar {
+      display: flex; align-items: center; gap: 3px;
+      padding: 4px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .cam-btn {
+      background: transparent; border: none; color: #94a3b8;
+      padding: 6px 11px; border-radius: 100px; font-size: 11px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+      min-height: 32px;
+    }
+    .cam-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .cam-btn.active {
+      background: #00b37e; color: #020617; font-weight: 800;
+      box-shadow: 0 0 14px rgba(0, 179, 126, 0.5);
+    }
+
+    /* Mobile HUD Toggle Button */
+    .mobile-hud-toggle {
+      display: none;
+      pointer-events: auto;
+      padding: 8px 14px;
+      border-radius: 100px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #00e5a0;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── BOTTOM HUD GRID ── */
+    .bottom-hud {
+      display: grid;
+      grid-template-columns: 320px 1fr 270px;
+      gap: 14px;
+      align-items: flex-end;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hud-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 16px;
+      backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6);
+      pointer-events: auto;
+    }
+
+    .pfd-card { padding: 14px 16px; }
+    .pfd-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px;
+    }
+    .pfd-title { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; }
+    .safety-tag {
+      font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 6px;
+      background: rgba(0, 229, 160, 0.15); color: #00e5a0; border: 1px solid rgba(0, 229, 160, 0.3);
+    }
+
+    .pfd-content {
+      display: grid; grid-template-columns: 1fr 64px; gap: 12px; align-items: center;
+    }
+    .metric-rows {
+      display: flex; flex-direction: column; gap: 5px; font-size: 11.5px;
+    }
+    .metric-row { display: flex; justify-content: space-between; align-items: center; }
+    .m-label { color: #94a3b8; font-weight: 500; }
+    .m-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #f8fafc; }
+    .m-val.green { color: #00e5a0; }
+    .m-val.blue { color: #38bdf8; }
+    .m-val.amber { color: #f59e0b; }
+
+    #horizon-canvas {
+      width: 62px; height: 62px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2);
+      box-shadow: 0 0 16px rgba(0,0,0,0.6);
+      background: #000;
+    }
+
+    /* Radar Mini-Map Center */
+    .radar-card {
+      padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 14px;
+    }
+    .radar-canvas-box { position: relative; width: 90px; height: 72px; flex-shrink: 0; }
+    #radar-canvas {
+      width: 100%; height: 100%; border-radius: 8px;
+      background: #090e17; border: 1px solid rgba(255,255,255,0.12);
+    }
+    .radar-details { display: flex; flex-direction: column; gap: 3px; font-size: 11px; }
+    .phase-badge-text { font-size: 12px; font-weight: 800; color: #00e5a0; letter-spacing: -0.01em; }
+    .phase-sub-text { color: #94a3b8; font-size: 10.5px; }
+
+    /* Action Buttons Panel */
+    .action-card {
+      display: flex; flex-direction: column; gap: 7px;
+      padding: 12px;
+    }
+    .btn-act {
+      padding: 10px 14px; border-radius: 10px;
+      font-size: 11.5px; font-weight: 800; cursor: pointer; border: none;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+      min-height: 38px;
+    }
+    .btn-act-green {
+      background: linear-gradient(135deg, #00b37e, #00e5a0);
+      color: #020617;
+    }
+    .btn-act-green:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 229, 160, 0.45); }
+
+    .btn-act-blue {
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      color: #020617;
+    }
+    .btn-act-blue:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(56, 189, 248, 0.45); }
+
+    .btn-act-sub {
+      background: rgba(255,255,255,0.06); color: #cbd5e1;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .btn-act-sub:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    /* Mobile Touch D-Pad Controls */
+    #mobile-dpad {
+      display: none;
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      z-index: 120;
+      pointer-events: auto;
+    }
+    .dpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 46px);
+      grid-template-rows: repeat(3, 46px);
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 8px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+    }
+    .dpad-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    .dpad-btn:active {
+      background: #00b37e;
+      color: #020617;
+    }
+
+    /* ── SUCCESS MODAL ── */
+    #success-modal {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.95);
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid #00e5a0;
+      border-radius: 20px; padding: 24px 28px; text-align: center;
+      backdrop-filter: blur(24px); opacity: 0; pointer-events: none;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: 420px; width: 90%;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.85), 0 0 35px rgba(0, 229, 160, 0.25);
+      z-index: 200;
+    }
+    #success-modal.show {
+      opacity: 1; transform: translate(-50%, -50%) scale(1);
+      pointer-events: auto;
+    }
+    .modal-acc {
+      font-size: 32px; font-weight: 900; color: #00e5a0;
+      font-family: 'JetBrains Mono', monospace; margin: 6px 0;
+    }
+    .modal-stats {
+      background: rgba(255,255,255,0.05); border-radius: 10px;
+      padding: 10px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+      text-align: left; font-size: 11px; margin-bottom: 16px;
+    }
+
+    /* ── MOBILE RESPONSIVE MEDIA QUERIES ── */
+    @media (max-width: 960px) {
+      .bottom-hud {
+        grid-template-columns: 1fr;
+        max-height: 48vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .corridor-stepper { display: none; }
+      .radar-card { display: none; }
+      .mobile-hud-toggle { display: inline-flex; }
+      #mobile-dpad { display: block; }
+    }
+
+    @media (max-width: 600px) {
+      #hud-overlay { padding: 10px; }
+      .brand-sub { display: none; }
+      .top-bar { gap: 6px; }
+      .pfd-card { padding: 10px 12px; }
+      .action-card { padding: 10px 12px; }
+      .btn-act { padding: 8px 12px; font-size: 11px; }
+      .modal-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div id="hud-overlay">
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="glass-pill brand-container">
+      <div class="brand-icon">🚁</div>
+      <div>
+        <div class="brand-text">MediLift 3D</div>
+        <div class="brand-sub">SVP Airport (AMD) ⇄ IKDRC Hospital</div>
+      </div>
+    </div>
+
+    <!-- Stepper -->
+    <div class="glass-pill corridor-stepper">
+      <div class="step-item active" id="st-airport">
+        <span class="step-dot"></span> <span>Airport Hub</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" id="st-river">
+        <span class="step-dot"></span> <span>Sabarmati</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" id="st-hospital">
+        <span class="step-dot"></span> <span>Civil IKDRC</span>
+      </div>
+    </div>
+
+    <!-- Environment Lighting Mode & Audio -->
+    <div class="glass-pill env-toolbar">
+      <button class="cam-btn active" onclick="setSkyTheme('day')">☀️ Day</button>
+      <button class="cam-btn" onclick="setSkyTheme('sunset')">🌅 Sunset</button>
+      <button class="cam-btn" onclick="setSkyTheme('night')">🌙 Night</button>
+      <button class="cam-btn" id="btn-audio" onclick="toggleAudio()">🔊 Sound</button>
+    </div>
+
+    <!-- Camera Selector -->
+    <div class="glass-pill cam-toolbar">
+      <button class="cam-btn active" onclick="switchCamera('chase')">🎥 Chase</button>
+      <button class="cam-btn" onclick="switchCamera('fpv')">🕶️ FPV</button>
+      <button class="cam-btn" onclick="switchCamera('orbit')">🔄 Orbit</button>
+      <button class="cam-btn" onclick="switchCamera('tower')">🗼 Tower</button>
+      <button class="cam-btn" onclick="switchCamera('helipad')">🏥 Helipad</button>
+    </div>
+
+    <!-- Mobile HUD Collapse Button -->
+    <button class="mobile-hud-toggle" onclick="toggleMobileHUD()">
+      📊 <span id="lbl-hud-toggle">Hide Telemetry</span>
+    </button>
+  </div>
+
+  <!-- BOTTOM HUD -->
+  <div class="bottom-hud" id="bottom-hud-box">
+    <!-- Left: Telemetry PFD -->
+    <div class="hud-card pfd-card">
+      <div class="pfd-header">
+        <span class="pfd-title">Avionics &amp; Telemetry</span>
+        <span class="safety-tag" id="hud-status-badge">AUTOPILOT READY</span>
+      </div>
+      <div class="pfd-content">
+        <div class="metric-rows">
+          <div class="metric-row"><span class="m-label">Altitude AGL:</span><span class="m-val green" id="hud-alt">0.0 m</span></div>
+          <div class="metric-row"><span class="m-label">Ground Speed:</span><span class="m-val blue" id="hud-spd">0.0 km/h</span></div>
+          <div class="metric-row"><span class="m-label">Target Dist:</span><span class="m-val" id="hud-dist">160.0 m</span></div>
+          <div class="metric-row"><span class="m-label">Obstacle Buffer:</span><span class="m-val green" id="hud-obs">CLEAR (&gt;25m)</span></div>
+          <div class="metric-row"><span class="m-label">Bio-Pod Temp:</span><span class="m-val green" id="hud-temp">4.0 °C</span></div>
+          <div class="metric-row"><span class="m-label">Battery SoC:</span><span class="m-val blue" id="hud-battery">98% (23.2V)</span></div>
+          <div class="metric-row"><span class="m-label">Payload:</span><span class="m-val amber" id="hud-payload">Donor Heart Secure</span></div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <canvas id="horizon-canvas" width="62" height="62"></canvas>
+          <span style="font-size:9px; font-weight:700; color:#94a3b8; font-family:'JetBrains Mono';">HORIZON</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center: Mini Radar & Phase Text -->
+    <div class="hud-card radar-card">
+      <div class="radar-canvas-box">
+        <canvas id="radar-canvas" width="90" height="72"></canvas>
+      </div>
+      <div class="radar-details">
+        <div class="phase-badge-text" id="hud-phase-title">PRE-FLIGHT AT AIRPORT</div>
+        <div class="phase-sub-text" id="hud-phase-sub">Position locked at Launchpad. 3D waypoint guidance ready.</div>
+        <div style="display:flex; gap:12px; margin-top:3px; font-family:'JetBrains Mono'; font-size:10.5px;">
+          <span>LAT: <strong style="color:#f1f5f9;">23.0772°N</strong></span>
+          <span>LNG: <strong style="color:#f1f5f9;">72.6289°E</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Mission Controls -->
+    <div class="hud-card action-card">
+      <button class="btn-act btn-act-green" id="btn-outbound" onclick="startOutbound()">
+        🛫 Start Outbound (Airport ➔ Hospital)
+      </button>
+      <button class="btn-act btn-act-blue" id="btn-return" onclick="startReturn()">
+        🛬 Vice-Versa (Hospital ➔ Airport)
+      </button>
+      <div style="display:flex; gap:6px;">
+        <button class="btn-act btn-act-sub" style="flex:1;" onclick="toggleWind()">
+          💨 <span id="wind-label">Wind: Calm</span>
+        </button>
+        <button class="btn-act btn-act-sub" style="flex:1;" onclick="resetMission()">
+          ↺ Reset
+        </button>
+      </div>
+      <a href="index.html" class="btn-act btn-act-sub" style="text-decoration:none;">
+        ← Back to Website
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Touch D-Pad for manual flight -->
+<div id="mobile-dpad">
+  <div class="dpad-grid">
+    <div class="dpad-btn" onpointerdown="setKey('ArrowUp', true)" onpointerup="setKey('ArrowUp', false)">▲</div>
+    <div class="dpad-btn" onpointerdown="setKey('w', true)" onpointerup="setKey('w', false)">W</div>
+    <div class="dpad-btn" onpointerdown="setKey('ArrowDown', true)" onpointerup="setKey('ArrowDown', false)">▼</div>
+    <div class="dpad-btn" onpointerdown="setKey('a', true)" onpointerup="setKey('a', false)">A</div>
+    <div class="dpad-btn" style="background:transparent; border:none; font-size:11px; color:#94a3b8;">DPAD</div>
+    <div class="dpad-btn" onpointerdown="setKey('d', true)" onpointerup="setKey('d', false)">D</div>
+    <div class="dpad-btn" onpointerdown="setKey('ArrowLeft', true)" onpointerup="setKey('ArrowLeft', false)">↶</div>
+    <div class="dpad-btn" onpointerdown="setKey('s', true)" onpointerup="setKey('s', false)">S</div>
+    <div class="dpad-btn" onpointerdown="setKey('ArrowRight', true)" onpointerup="setKey('ArrowRight', false)">↷</div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div id="success-modal">
+  <div style="font-size:36px;" id="modal-icon">✅</div>
+  <h3 style="font-size:18px; font-weight:800; color:#fff;" id="modal-title">Organ Delivered!</h3>
+  <div class="modal-acc" id="modal-acc">0.08 m</div>
+  <p style="font-size:12px; color:#94a3b8; line-height:1.5; margin-bottom:12px;" id="modal-desc">
+    Precision touchdown locked on <strong>Institute of Kidney Diseases &amp; Research Centre (IKDRC) Rooftop Helipad</strong>. Donor heart received at 4.0°C by surgical team.
+  </p>
+  <div class="modal-stats">
+    <div>Optical Accuracy: <strong style="color:#00e5a0;" id="m-acc">0.08 m</strong></div>
+    <div>Corridor Time: <strong style="color:#38bdf8;">17m 42s</strong></div>
+    <div>Pod Temp: <strong style="color:#00e5a0;">4.0°C</strong></div>
+    <div>Battery Left: <strong style="color:#38bdf8;">84%</strong></div>
+  </div>
+  <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+    <button class="btn-act btn-act-blue" onclick="startReturn(); closeModal();">
+      🚀 Start Vice-Versa Return Flight
+    </button>
+    <button class="btn-act btn-act-sub" onclick="closeModal();">
+      Dismiss
+    </button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// MASSIVE 3D SCENE & REALISTIC RENDERING PIPELINE (2400M SCALE)
+// ============================================================
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.25;
+
+const scene = new THREE.Scene();
+const skyColors = {
+  day: { bg: 0x7ec0ee, fog: 0x7ec0ee, sun: 0xfffbeb, amb: 0xdbeafe, exp: 1.25 },
+  sunset: { bg: 0xf97316, fog: 0xfb923c, sun: 0xfde047, amb: 0xfecdd3, exp: 1.1 },
+  night: { bg: 0x030712, fog: 0x030712, sun: 0x38bdf8, amb: 0x0f172a, exp: 1.4 }
+};
+
+scene.background = new THREE.Color(skyColors.day.bg);
+scene.fog = new THREE.FogExp2(skyColors.day.fog, 0.0018);
+
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.2, 3000);
+
+window.addEventListener('resize', () => {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+// Mobile HUD toggle helper
+let hudVisible = true;
+function toggleMobileHUD() {
+  hudVisible = !hudVisible;
+  const box = document.getElementById('bottom-hud-box');
+  const dpad = document.getElementById('mobile-dpad');
+  if (hudVisible) {
+    box.style.display = 'grid';
+    if (dpad) dpad.style.display = 'block';
+    document.getElementById('lbl-hud-toggle').textContent = 'Hide Telemetry';
+  } else {
+    box.style.display = 'none';
+    if (dpad) dpad.style.display = 'none';
+    document.getElementById('lbl-hud-toggle').textContent = 'Show Telemetry';
+  }
+}
+
+// ── SUNLIGHT & VOLUMETRIC ATMOSPHERE ──
+const ambLight = new THREE.AmbientLight(skyColors.day.amb, 0.8);
+scene.add(ambLight);
+
+const sun = new THREE.DirectionalLight(skyColors.day.sun, 1.4);
+sun.position.set(160, 300, 120);
+sun.castShadow = true;
+sun.shadow.camera.near = 5;
+sun.shadow.camera.far = 800;
+sun.shadow.camera.left = -260; sun.shadow.camera.right = 260;
+sun.shadow.camera.top = 260; sun.shadow.camera.bottom = -260;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.bias = -0.0002;
+scene.add(sun);
+
+const hemi = new THREE.HemisphereLight(0xbae6fd, 0x1e293b, 0.55);
+scene.add(hemi);
+
+// ── VAST 2400M TERRAIN ──
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(2400, 2400, 48, 48),
+  new THREE.MeshLambertMaterial({ color: 0x3b533a })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// ── SABARMATI RIVER WATERWAY ──
+const river = new THREE.Mesh(
+  new THREE.PlaneGeometry(120, 2400),
+  new THREE.MeshStandardMaterial({
+    color: 0x0c2842,
+    roughness: 0.08,
+    metalness: 0.9,
+    transparent: true,
+    opacity: 0.95
+  })
+);
+river.rotation.x = -Math.PI / 2;
+river.position.set(20, 0.12, 0);
+scene.add(river);
+
+function buildCableStayedBridge(zPos) {
+  const grp = new THREE.Group();
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(140, 2.0, 14), new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 }));
+  deck.position.set(20, 5.0, zPos);
+  deck.castShadow = true; deck.receiveShadow = true;
+  grp.add(deck);
+
+  const pylon = new THREE.Mesh(new THREE.ConeGeometry(3.5, 42, 4), new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.2 }));
+  pylon.position.set(20, 24, zPos);
+  pylon.castShadow = true;
+  grp.add(pylon);
+
+  for (let c = -45; c <= 45; c += 15) {
+    if (c === 0) continue;
+    const cable = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, Math.hypot(c, 24), 6), new THREE.MeshBasicMaterial({ color: 0x94a3b8 }));
+    cable.position.set(20 + c/2, 22, zPos);
+    cable.rotation.z = Math.atan2(c, 32);
+    grp.add(cable);
+  }
+  scene.add(grp);
+}
+buildCableStayedBridge(40);
+buildCableStayedBridge(-60);
+
+function buildHighwayRoad(startX, startZ, endX, endZ) {
+  const len = Math.hypot(endX - startX, endZ - startZ);
+  const road = new THREE.Mesh(new THREE.PlaneGeometry(12, len), new THREE.MeshLambertMaterial({ color: 0x1e293b }));
+  road.rotation.x = -Math.PI / 2;
+  road.position.set((startX + endX)/2, 0.05, (startZ + endZ)/2);
+  road.rotation.z = Math.atan2(endX - startX, endZ - startZ);
+  scene.add(road);
+}
+buildHighwayRoad(-120, 200, 140, -180);
+buildHighwayRoad(-60, -200, 80, 220);
+
+// Moving Ambulances & Highway Cars
+const cityVehicles = [];
+function addVehicle(isAmbulance = false) {
+  const grp = new THREE.Group();
+  const vColor = isAmbulance ? 0xffffff : (Math.random() > 0.5 ? 0x0284c7 : 0xdc2626);
+  const body = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.2, 4.4), new THREE.MeshStandardMaterial({ color: vColor }));
+  body.position.y = 0.6;
+  body.castShadow = true;
+  grp.add(body);
+
+  if (isAmbulance) {
+    const strobe = new THREE.PointLight(0xef4444, 2.0, 8);
+    strobe.position.set(0, 1.5, 0);
+    grp.add(strobe);
+    grp.userData.strobe = strobe;
+  }
+
+  const hLight = new THREE.PointLight(0xfffaed, 1.0, 10);
+  hLight.position.set(0, 0.6, 2.4);
+  grp.add(hLight);
+
+  grp.position.set(-100 + Math.random()*200, 0.1, -100 + Math.random()*200);
+  scene.add(grp);
+  cityVehicles.push({ grp, speed: 0.4 + Math.random()*0.4, isAmbulance });
+}
+for (let v = 0; v < 8; v++) addVehicle(v % 3 === 0);
+
+// Atmospheric Clouds
+const clouds = [];
+function createClouds() {
+  const cGeo = new THREE.DodecahedronGeometry(22, 1);
+  const cMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1.0, transparent: true, opacity: 0.65 });
+  for (let i = 0; i < 18; i++) {
+    const cloud = new THREE.Mesh(cGeo, cMat);
+    cloud.position.set((Math.random() - 0.5) * 1400, 180 + Math.random()*60, (Math.random() - 0.5) * 1400);
+    cloud.scale.set(1.5 + Math.random()*2, 0.6 + Math.random()*0.5, 1.2 + Math.random()*1.5);
+    scene.add(cloud);
+    clouds.push(cloud);
+  }
+}
+createClouds();
+
+const AIRPORT_POS  = new THREE.Vector3(-70, 0.4, 80);
+const HOSPITAL_POS = new THREE.Vector3(100, 37.6, -100);
+
+const OBSTACLE_VOLUMES = [
+  { x: -28, z: 25, r: 12, h: 44, name: "ATC Tower" },
+  { x: -38, z: 80, r: 32, h: 20, name: "Terminal Concourse" },
+  { x: -20, z: 20, r: 14, h: 32, name: "Shahibaug Tower A" },
+  { x: -35, z: -20, r: 15, h: 38, name: "Sardar Patel Memorial Pavilion" },
+  { x: -10, z: -60, r: 16, h: 44, name: "Riverfront High-Rise" },
+  { x: 65,  z: 45,  r: 15, h: 36, name: "East Corridor High-Rise" },
+  { x: 80,  z: 15,  r: 18, h: 42, name: "UN Mehta Cardiology Institute" },
+  { x: 55,  z: -35, r: 16, h: 48, name: "GCRI Cancer Research Tower" },
+  { x: 80,  z: -75, r: 18, h: 38, name: "Trauma Centre 1200-Bed Block" },
+  { x: 45,  z: 90,  r: 14, h: 26, name: "Airport Road Tower" }
+];
+
+function buildRealisticAirplane(scale = 1.0) {
+  const plane = new THREE.Group();
+  const whiteMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.2, metalness: 0.1 });
+  const blueMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3, metalness: 0.2 });
+  const chromeMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.1, metalness: 0.9 });
+  const darkGlassMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.05, metalness: 0.95 });
+  const tireMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
+
+  const bodyLen = 34 * scale;
+  const bodyRad = 2.0 * scale;
+  const fuseBody = new THREE.Mesh(new THREE.CylinderGeometry(bodyRad, bodyRad, bodyLen * 0.7, 24), whiteMat);
+  fuseBody.rotation.z = Math.PI / 2;
+  fuseBody.position.set(0, 3.8 * scale, 0);
+  fuseBody.castShadow = true;
+  plane.add(fuseBody);
+
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(bodyRad, 7 * scale, 24), whiteMat);
+  nose.rotation.z = -Math.PI / 2;
+  nose.position.set((bodyLen * 0.35 + 3.5 * scale), 3.8 * scale, 0);
+  nose.castShadow = true;
+  plane.add(nose);
+
+  const windshield = new THREE.Mesh(new THREE.BoxGeometry(2.4 * scale, 1.2 * scale, 2.6 * scale), darkGlassMat);
+  windshield.position.set((bodyLen * 0.35 + 1.2 * scale), (3.8 + 1.1) * scale, 0);
+  plane.add(windshield);
+
+  for (let wx = -9 * scale; wx <= 9 * scale; wx += 1.8 * scale) {
+    const winL = new THREE.Mesh(new THREE.PlaneGeometry(0.5 * scale, 0.7 * scale), darkGlassMat);
+    winL.position.set(wx, (3.8 + 0.5) * scale, bodyRad * 1.01);
+    plane.add(winL);
+    const winR = new THREE.Mesh(new THREE.PlaneGeometry(0.5 * scale, 0.7 * scale), darkGlassMat);
+    winR.rotation.y = Math.PI;
+    winR.position.set(wx, (3.8 + 0.5) * scale, -bodyRad * 1.01);
+    plane.add(winR);
+  }
+
+  const tailCone = new THREE.Mesh(new THREE.ConeGeometry(bodyRad, 9 * scale, 24), whiteMat);
+  tailCone.rotation.z = Math.PI / 2;
+  tailCone.position.set(-(bodyLen * 0.35 + 4.5 * scale), 3.8 * scale, 0);
+  plane.add(tailCone);
+
+  const wingSpan = 32 * scale;
+  const wingL = new THREE.Mesh(new THREE.BoxGeometry(5 * scale, 0.35 * scale, wingSpan * 0.5), blueMat);
+  wingL.rotation.y = -0.25; wingL.rotation.x = 0.04;
+  wingL.position.set(0, 3.2 * scale, (wingSpan * 0.25 + 1.5 * scale));
+  wingL.castShadow = true;
+  plane.add(wingL);
+
+  const wingR = new THREE.Mesh(new THREE.BoxGeometry(5 * scale, 0.35 * scale, wingSpan * 0.5), blueMat);
+  wingR.rotation.y = 0.25; wingR.rotation.x = -0.04;
+  wingR.position.set(0, 3.2 * scale, -(wingSpan * 0.25 + 1.5 * scale));
+  wingR.castShadow = true;
+  plane.add(wingR);
+
+  function makeTurbofan(zOffset) {
+    const eng = new THREE.Group();
+    const cowl = new THREE.Mesh(new THREE.CylinderGeometry(1.2 * scale, 1.2 * scale, 4.5 * scale, 20), whiteMat);
+    cowl.rotation.z = Math.PI / 2; cowl.castShadow = true;
+    eng.add(cowl);
+    const fan = new THREE.Mesh(new THREE.ConeGeometry(0.6 * scale, 1.2 * scale, 16), chromeMat);
+    fan.rotation.z = -Math.PI / 2; fan.position.x = 2.0 * scale;
+    eng.add(fan);
+    eng.position.set(1.5 * scale, 2.0 * scale, zOffset);
+    return eng;
+  }
+  plane.add(makeTurbofan(6.5 * scale));
+  plane.add(makeTurbofan(-6.5 * scale));
+
+  const vTail = new THREE.Mesh(new THREE.BoxGeometry(4.5 * scale, 7.5 * scale, 0.4 * scale), blueMat);
+  vTail.rotation.z = -0.35;
+  vTail.position.set(-(bodyLen * 0.35 + 2.5 * scale), (3.8 + 4.5) * scale, 0);
+  vTail.castShadow = true;
+  plane.add(vTail);
+
+  function makeGear(gx, gz) {
+    const gear = new THREE.Group();
+    const strut = new THREE.Mesh(new THREE.CylinderGeometry(0.15 * scale, 0.15 * scale, 2.2 * scale, 8), chromeMat);
+    strut.position.y = 1.1 * scale;
+    gear.add(strut);
+    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.6 * scale, 0.6 * scale, 0.6 * scale, 16), tireMat);
+    wheel.rotation.x = Math.PI / 2; wheel.position.set(0, 0.6 * scale, 0);
+    gear.add(wheel);
+    gear.position.set(gx, 0, gz);
+    return gear;
+  }
+  plane.add(makeGear(10 * scale, 0));
+  plane.add(makeGear(-1.5 * scale, 4.0 * scale));
+  plane.add(makeGear(-1.5 * scale, -4.0 * scale));
+
+  return plane;
+}
+
+let airportGroup;
+function buildAirport() {
+  const grp = new THREE.Group();
+
+  const runway = new THREE.Mesh(
+    new THREE.PlaneGeometry(44, 400),
+    new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.9, metalness: 0.1 })
+  );
+  runway.rotation.x = -Math.PI / 2;
+  runway.position.set(AIRPORT_POS.x - 24, 0.02, AIRPORT_POS.z);
+  runway.receiveShadow = true;
+  grp.add(runway);
+
+  const runwayCross = new THREE.Mesh(
+    new THREE.PlaneGeometry(36, 260),
+    new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.9, metalness: 0.1 })
+  );
+  runwayCross.rotation.x = -Math.PI / 2;
+  runwayCross.rotation.z = Math.PI / 3;
+  runwayCross.position.set(AIRPORT_POS.x - 40, 0.015, AIRPORT_POS.z - 40);
+  grp.add(runwayCross);
+
+  const apron = new THREE.Mesh(
+    new THREE.PlaneGeometry(120, 220),
+    new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8, metalness: 0.2 })
+  );
+  apron.rotation.x = -Math.PI / 2;
+  apron.position.set(AIRPORT_POS.x + 24, 0.025, AIRPORT_POS.z);
+  apron.receiveShadow = true;
+  grp.add(apron);
+
+  for (let z = -180; z <= 180; z += 18) {
+    const dash = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 9), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    dash.rotation.x = -Math.PI / 2;
+    dash.position.set(AIRPORT_POS.x - 24, 0.03, AIRPORT_POS.z + z);
+    grp.add(dash);
+  }
+
+  for (let z = -180; z <= 180; z += 36) {
+    const l1 = new THREE.PointLight(0x38bdf8, 1.0, 22);
+    l1.position.set(AIRPORT_POS.x - 46, 0.6, AIRPORT_POS.z + z);
+    grp.add(l1);
+    const l2 = new THREE.PointLight(0x38bdf8, 1.0, 22);
+    l2.position.set(AIRPORT_POS.x - 2, 0.6, AIRPORT_POS.z + z);
+    grp.add(l2);
+  }
+
+  const term = new THREE.Mesh(
+    new THREE.BoxGeometry(64, 18, 130),
+    new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.2, metalness: 0.4 })
+  );
+  term.position.set(AIRPORT_POS.x + 50, 9, AIRPORT_POS.z);
+  term.castShadow = true; term.receiveShadow = true;
+  grp.add(term);
+
+  const canopy = new THREE.Mesh(new THREE.BoxGeometry(68, 2.5, 136), new THREE.MeshLambertMaterial({ color: 0x0284c7 }));
+  canopy.position.set(AIRPORT_POS.x + 50, 18.5, AIRPORT_POS.z);
+  grp.add(canopy);
+
+  function makeJetway(jx, jz) {
+    const jw = new THREE.Mesh(new THREE.BoxGeometry(18, 3.4, 3.8), new THREE.MeshLambertMaterial({ color: 0x64748b }));
+    jw.position.set(jx, 5.8, jz);
+    jw.castShadow = true;
+    grp.add(jw);
+  }
+  makeJetway(AIRPORT_POS.x + 16, AIRPORT_POS.z - 45);
+  makeJetway(AIRPORT_POS.x + 16, AIRPORT_POS.z);
+  makeJetway(AIRPORT_POS.x + 16, AIRPORT_POS.z + 45);
+
+  const towerShaft = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 6.0, 38, 16), new THREE.MeshLambertMaterial({ color: 0xf8fafc }));
+  towerShaft.position.set(-28, 19, 25);
+  towerShaft.castShadow = true;
+  grp.add(towerShaft);
+
+  const towerDeck = new THREE.Mesh(
+    new THREE.CylinderGeometry(8.5, 7.0, 7.5, 16),
+    new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1, metalness: 0.8, transparent: true, opacity: 0.88 })
+  );
+  towerDeck.position.set(-28, 38, 25);
+  grp.add(towerDeck);
+
+  const radarMesh = new THREE.Mesh(new THREE.BoxGeometry(6, 0.5, 1.4), new THREE.MeshLambertMaterial({ color: 0xffffff }));
+  radarMesh.position.set(-28, 43, 25);
+  grp.add(radarMesh);
+  grp.userData.radar = radarMesh;
+
+  const pad = new THREE.Mesh(new THREE.CircleGeometry(6, 48), new THREE.MeshLambertMaterial({ color: 0x1e293b }));
+  pad.rotation.x = -Math.PI / 2;
+  pad.position.set(AIRPORT_POS.x, 0.05, AIRPORT_POS.z);
+  grp.add(pad);
+
+  const padRing = new THREE.Mesh(new THREE.RingGeometry(5.2, 5.8, 48), new THREE.MeshBasicMaterial({ color: 0x0099ff, side: THREE.DoubleSide }));
+  padRing.rotation.x = -Math.PI / 2;
+  padRing.position.set(AIRPORT_POS.x, 0.06, AIRPORT_POS.z);
+  grp.add(padRing);
+
+  const airliner1 = buildRealisticAirplane(0.9);
+  airliner1.position.set(AIRPORT_POS.x + 6, 0, AIRPORT_POS.z - 45);
+  airliner1.rotation.y = Math.PI / 2;
+  grp.add(airliner1);
+
+  const airliner2 = buildRealisticAirplane(0.9);
+  airliner2.position.set(AIRPORT_POS.x + 6, 0, AIRPORT_POS.z + 45);
+  airliner2.rotation.y = Math.PI / 2;
+  grp.add(airliner2);
+
+  const airliner3 = buildRealisticAirplane(0.85);
+  airliner3.position.set(AIRPORT_POS.x - 24, 0, AIRPORT_POS.z - 100);
+  grp.add(airliner3);
+
+  scene.add(grp);
+  return grp;
+}
+airportGroup = buildAirport();
+
+let hospitalPulseRing;
+function buildHospital() {
+  const grp = new THREE.Group();
+
+  const ikdrcTower = new THREE.Mesh(
+    new THREE.BoxGeometry(56, 36, 56),
+    new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 })
+  );
+  ikdrcTower.position.set(HOSPITAL_POS.x, 18, HOSPITAL_POS.z);
+  ikdrcTower.castShadow = true; ikdrcTower.receiveShadow = true;
+  grp.add(ikdrcTower);
+
+  const unMehtaCardio = new THREE.Mesh(
+    new THREE.BoxGeometry(36, 30, 36),
+    new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.15, metalness: 0.6 })
+  );
+  unMehtaCardio.position.set(HOSPITAL_POS.x + 46, 15, HOSPITAL_POS.z - 10);
+  unMehtaCardio.castShadow = true;
+  grp.add(unMehtaCardio);
+
+  const gcriWing = new THREE.Mesh(
+    new THREE.BoxGeometry(40, 24, 40),
+    new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.4 })
+  );
+  gcriWing.position.set(HOSPITAL_POS.x - 38, 12, HOSPITAL_POS.z + 20);
+  gcriWing.castShadow = true;
+  grp.add(gcriWing);
+
+  const traumaBay = new THREE.Mesh(
+    new THREE.BoxGeometry(30, 8, 20),
+    new THREE.MeshLambertMaterial({ color: 0xdc2626 })
+  );
+  traumaBay.position.set(HOSPITAL_POS.x, 4, HOSPITAL_POS.z + 36);
+  grp.add(traumaBay);
+
+  const helipadElev = new THREE.Mesh(
+    new THREE.BoxGeometry(26, 1.6, 26),
+    new THREE.MeshLambertMaterial({ color: 0x0f172a })
+  );
+  helipadElev.position.set(HOSPITAL_POS.x, 36.8, HOSPITAL_POS.z);
+  helipadElev.castShadow = true; helipadElev.receiveShadow = true;
+  grp.add(helipadElev);
+
+  const targetCircle = new THREE.Mesh(new THREE.CircleGeometry(8.5, 48), new THREE.MeshLambertMaterial({ color: 0x1e293b }));
+  targetCircle.rotation.x = -Math.PI / 2;
+  targetCircle.position.set(HOSPITAL_POS.x, 37.62, HOSPITAL_POS.z);
+  grp.add(targetCircle);
+
+  const targetRing = new THREE.Mesh(new THREE.RingGeometry(7.4, 8.2, 48), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide }));
+  targetRing.rotation.x = -Math.PI / 2;
+  targetRing.position.set(HOSPITAL_POS.x, 37.63, HOSPITAL_POS.z);
+  grp.add(targetRing);
+
+  function makeCrossBar(w, h) {
+    const bar = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: 0x00e5a0, side: THREE.DoubleSide }));
+    bar.rotation.x = -Math.PI / 2;
+    bar.position.set(HOSPITAL_POS.x, 37.64, HOSPITAL_POS.z);
+    return bar;
+  }
+  grp.add(makeCrossBar(2.0, 8.5));
+  grp.add(makeCrossBar(8.5, 2.0));
+
+  hospitalPulseRing = new THREE.Mesh(
+    new THREE.RingGeometry(8.6, 9.2, 48),
+    new THREE.MeshBasicMaterial({ color: 0x00e5a0, transparent: true, opacity: 0.8, side: THREE.DoubleSide })
+  );
+  hospitalPulseRing.rotation.x = -Math.PI / 2;
+  hospitalPulseRing.position.set(HOSPITAL_POS.x, 37.65, HOSPITAL_POS.z);
+  grp.add(hospitalPulseRing);
+
+  scene.add(grp);
+}
+buildHospital();
+
+function buildRealLandmarks() {
+  const grp = new THREE.Group();
+  const marbleMat = new THREE.MeshStandardMaterial({ color: 0xfef08a, roughness: 0.3 });
+  const bMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.2, metalness: 0.5 });
+
+  const mahalBase = new THREE.Mesh(new THREE.BoxGeometry(32, 14, 32), marbleMat);
+  mahalBase.position.set(-35, 7, -20);
+  mahalBase.castShadow = true;
+  grp.add(mahalBase);
+
+  const mahalDome = new THREE.Mesh(new THREE.SphereGeometry(8, 16, 16), marbleMat);
+  mahalDome.position.set(-35, 18, -20);
+  grp.add(mahalDome);
+
+  OBSTACLE_VOLUMES.forEach((obs) => {
+    if (obs.name === "ATC Tower" || obs.name === "Terminal Concourse" || obs.name.includes("Memorial")) return;
+    const b = new THREE.Mesh(new THREE.BoxGeometry(obs.r * 1.5, obs.h, obs.r * 1.5), bMat);
+    b.position.set(obs.x, obs.h / 2, obs.z);
+    b.castShadow = true; b.receiveShadow = true;
+    grp.add(b);
+  });
+
+  scene.add(grp);
+}
+buildRealLandmarks();
+
+// ── 3X3 FT HEAVY-LIFT OCTOCOPTER ──
+const droneGroup = new THREE.Group();
+scene.add(droneGroup);
+
+const chassis = new THREE.Mesh(
+  new THREE.BoxGeometry(1.1, 0.25, 1.1),
+  new THREE.MeshStandardMaterial({ color: 0x0b1120, roughness: 0.25, metalness: 0.9 })
+);
+chassis.castShadow = true;
+droneGroup.add(chassis);
+
+const armMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.2, metalness: 0.95 });
+for (let a = 0; a < 2; a++) {
+  const arm = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.08, 0.12), armMat);
+  arm.rotation.y = a === 0 ? Math.PI/4 : -Math.PI/4;
+  arm.castShadow = true;
+  droneGroup.add(arm);
+}
+
+const rotors = [];
+const motorMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, metalness: 0.9, roughness: 0.2 });
+const propMat = new THREE.MeshStandardMaterial({ color: 0x00e5a0, transparent: true, opacity: 0.65, roughness: 0.15 });
+
+[[1,1], [-1,-1], [1,-1], [-1,1]].forEach(([sx, sz], i) => {
+  const px = sx * 0.98;
+  const pz = sz * 0.98;
+
+  const mTop = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.12, 12), motorMat);
+  mTop.position.set(px, 0.12, pz);
+  droneGroup.add(mTop);
+
+  const pTop = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.04, 16), propMat);
+  pTop.position.set(px, 0.18, pz);
+  droneGroup.add(pTop);
+  rotors.push({ mesh: pTop, dir: i % 2 === 0 ? 1 : -1 });
+
+  const mBot = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.12, 12), motorMat);
+  mBot.position.set(px, -0.12, pz);
+  droneGroup.add(mBot);
+
+  const pBot = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.04, 16), propMat);
+  pBot.position.set(px, -0.18, pz);
+  droneGroup.add(pBot);
+  rotors.push({ mesh: pBot, dir: i % 2 === 0 ? -1 : 1 });
+});
+
+const navBeacon = new THREE.PointLight(0xffffff, 2.2, 14);
+navBeacon.position.set(0, 0.28, 0);
+droneGroup.add(navBeacon);
+
+const portLed = new THREE.PointLight(0xef4444, 1.2, 5);
+portLed.position.set(-1.0, 0, -1.0);
+droneGroup.add(portLed);
+
+const starLed = new THREE.PointLight(0x00e5a0, 1.2, 5);
+starLed.position.set(1.0, 0, -1.0);
+droneGroup.add(starLed);
+
+const payloadGroup = new THREE.Group();
+droneGroup.add(payloadGroup);
+
+const podMesh = new THREE.Mesh(
+  new THREE.BoxGeometry(0.48, 0.32, 0.48),
+  new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.3, metalness: 0.1 })
+);
+podMesh.position.y = -0.34;
+payloadGroup.add(podMesh);
+
+const crossMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const crossH = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.02, 0.08), crossMat);
+crossH.position.set(0, -0.19, -0.25);
+payloadGroup.add(crossH);
+const crossV = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.02, 0.24), crossMat);
+crossV.position.set(0, -0.19, -0.25);
+payloadGroup.add(crossV);
+
+let payloadReleased = false;
+const droppedPod = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.32, 0.48), new THREE.MeshStandardMaterial({ color: 0xf97316 }));
+droppedPod.visible = false;
+scene.add(droppedPod);
+
+// Laser Ribbon Flight Trail
+const MAX_TRAIL = 120;
+const trailPoints = [];
+const trailGeo = new THREE.BufferGeometry();
+const trailPositions = new Float32Array(MAX_TRAIL * 3);
+trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
+const trailMat = new THREE.LineBasicMaterial({ color: 0x00e5a0, linewidth: 2, transparent: true, opacity: 0.85 });
+const flightTrailLine = new THREE.Line(trailGeo, trailMat);
+scene.add(flightTrailLine);
+
+// ============================================================
+// 3D POTENTIAL FIELD COLLISION AVOIDANCE & 6-DOF FLIGHT MATH
+// ============================================================
+
+const droneState = {
+  pos: new THREE.Vector3().copy(AIRPORT_POS),
+  vel: new THREE.Vector3(0, 0, 0),
+  pitch: 0, roll: 0, yaw: 0,
+  pitchRate: 0, rollRate: 0, yawRate: 0
+};
+
+const GRAVITY = 9.81;
+const MASS_DRONE = 2.2;
+const MASS_PAYLOAD = 0.5;
+const MAX_THRUST = (MASS_DRONE + MASS_PAYLOAD) * GRAVITY * 2.4;
+const DRAG_COEFF = 0.35;
+const ANGULAR_DAMPING = 5.2;
+
+let windMode = 0;
+let windVector = new THREE.Vector3(0, 0, 0);
+
+let missionState = 'STANDBY';
+let activeCam = 'chase';
+const chaseOffset = new THREE.Vector3(0, 3.8, 9.5);
+const camTarget = new THREE.Vector3();
+
+const keys = {};
+window.addEventListener('keydown', e => keys[e.key] = true);
+window.addEventListener('keyup', e => keys[e.key] = false);
+
+function setKey(k, val) { keys[k] = val; }
+
+let audioCtx = null;
+let osc1 = null, osc2 = null, gainNode = null;
+let soundEnabled = false;
+
+function initAudio() {
+  if (audioCtx) return;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    gainNode = audioCtx.createGain();
+    gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
+    gainNode.connect(audioCtx.destination);
+
+    osc1 = audioCtx.createOscillator();
+    osc1.type = 'sawtooth';
+    osc1.frequency.setValueAtTime(110, audioCtx.currentTime);
+    osc1.connect(gainNode);
+    osc1.start();
+
+    osc2 = audioCtx.createOscillator();
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(220, audioCtx.currentTime);
+    osc2.connect(gainNode);
+    osc2.start();
+    soundEnabled = true;
+  } catch (e) {}
+}
+
+function toggleAudio() {
+  if (!audioCtx) initAudio();
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  soundEnabled = !soundEnabled;
+  if (gainNode && audioCtx) {
+    gainNode.gain.setValueAtTime(soundEnabled ? 0.04 : 0.0, audioCtx.currentTime);
+  }
+  document.getElementById('btn-audio').textContent = soundEnabled ? '🔊 Sound' : '🔇 Muted';
+}
+
+function updateAudioPitch(speedNorm) {
+  if (!soundEnabled || !osc1 || !audioCtx) return;
+  const baseFreq = 90 + speedNorm * 180;
+  osc1.frequency.setTargetAtTime(baseFreq, audioCtx.currentTime, 0.1);
+  osc2.frequency.setTargetAtTime(baseFreq * 2, audioCtx.currentTime, 0.1);
+}
+
+function calculateObstacleRepulsion(pos) {
+  const repulsionForce = new THREE.Vector3(0, 0, 0);
+  let minObstacleDist = 999;
+
+  OBSTACLE_VOLUMES.forEach(obs => {
+    const dx = pos.x - obs.x;
+    const dz = pos.z - obs.z;
+    const distXZ = Math.hypot(dx, dz);
+    const safetyRadius = obs.r + 14.0;
+
+    if (pos.y < obs.h + 8.0 && distXZ < safetyRadius) {
+      const penetration = safetyRadius - distXZ;
+      const repMag = (penetration / safetyRadius) * 22.0;
+
+      const normal = new THREE.Vector2(dx, dz).normalize();
+      repulsionForce.x += normal.x * repMag;
+      repulsionForce.z += normal.y * repMag;
+
+      if (pos.y < obs.h + 5.0) {
+        repulsionForce.y += 12.0 * (1.0 - (pos.y / (obs.h + 5.0)));
+      }
+
+      minObstacleDist = Math.min(minObstacleDist, distXZ - obs.r);
+    }
+  });
+
+  return { force: repulsionForce, minDist: minObstacleDist };
+}
+
+function physicsStep(dt) {
+  if (dt > 0.05) dt = 0.05;
+
+  const totalMass = MASS_DRONE + (payloadReleased ? 0 : MASS_PAYLOAD);
+  const hoverThrust = totalMass * GRAVITY;
+
+  let thrustCmd = 0;
+  let pitchCmd = 0;
+  let rollCmd = 0;
+  let yawRateCmd = 0;
+
+  const isOverHospital = droneState.pos.distanceTo(new THREE.Vector3(HOSPITAL_POS.x, droneState.pos.y, HOSPITAL_POS.z)) < 15;
+  const currentGroundY = isOverHospital ? 37.62 : 0.4;
+  const hAboveGround = Math.max(0.1, droneState.pos.y - currentGroundY);
+  const groundEffect = (hAboveGround < 2.0) ? (1.0 + 0.12 * Math.exp(-hAboveGround * 1.5)) : 1.0;
+
+  const obsData = calculateObstacleRepulsion(droneState.pos);
+  const repForce = obsData.force;
+
+  if (obsData.minDist < 990) {
+    document.getElementById('hud-obs').textContent = `${Math.max(1, obsData.minDist).toFixed(1)} m (AVOIDING)`;
+    document.getElementById('hud-obs').className = 'm-val amber';
+  } else {
+    document.getElementById('hud-obs').textContent = 'CLEAR (>25m)';
+    document.getElementById('hud-obs').className = 'm-val green';
+  }
+
+  // ── AUTOPILOT GUIDANCE ──
+  if (missionState === 'OUTBOUND_TAKEOFF') {
+    const cruiseAlt = 50.0;
+    thrustCmd = hoverThrust * 1.45;
+    if (droneState.pos.y >= 46.0) {
+      missionState = 'OUTBOUND_CRUISE';
+    }
+  }
+  else if (missionState === 'OUTBOUND_CRUISE') {
+    const targetAlt = 50.0;
+    const dx = HOSPITAL_POS.x - droneState.pos.x;
+    const dz = HOSPITAL_POS.z - droneState.pos.z;
+    const distHoriz = Math.hypot(dx, dz);
+
+    const goalDir = new THREE.Vector2(dx, dz).normalize().multiplyScalar(35.0);
+    const combinedVector = new THREE.Vector2(goalDir.x + repForce.x, goalDir.y + repForce.z);
+
+    const desiredHeading = Math.atan2(combinedVector.x, combinedVector.y);
+    let headingErr = desiredHeading - droneState.yaw;
+    headingErr = Math.atan2(Math.sin(headingErr), Math.cos(headingErr));
+    yawRateCmd = Math.max(-2.0, Math.min(2.0, headingErr * 2.5));
+
+    pitchCmd = (distHoriz > 18) ? 0.38 : 0.12;
+
+    const altErr = targetAlt + repForce.y - droneState.pos.y;
+    thrustCmd = hoverThrust + altErr * 3.8 - droneState.vel.y * 2.8;
+
+    if (distHoriz < 9.0) {
+      missionState = 'OUTBOUND_DESCENT';
+    }
+  }
+  else if (missionState === 'OUTBOUND_DESCENT') {
+    const targetAlt = 37.62;
+    const dx = HOSPITAL_POS.x - droneState.pos.x;
+    const dz = HOSPITAL_POS.z - droneState.pos.z;
+    const distHoriz = Math.hypot(dx, dz);
+
+    let headingErr = 0.0 - droneState.yaw;
+    headingErr = Math.atan2(Math.sin(headingErr), Math.cos(headingErr));
+    yawRateCmd = headingErr * 2.0;
+
+    const cosY = Math.cos(droneState.yaw);
+    const sinY = Math.sin(droneState.yaw);
+    const localX =  dx * cosY - dz * sinY;
+    const localZ =  dx * sinY + dz * cosY;
+
+    rollCmd  = Math.max(-0.25, Math.min(0.25, localX * 0.12 - (droneState.vel.x * cosY - droneState.vel.z * sinY) * 0.25));
+    pitchCmd = Math.max(-0.25, Math.min(0.25, localZ * 0.12 - (droneState.vel.x * sinY + droneState.vel.z * cosY) * 0.25));
+
+    const altErr = targetAlt - droneState.pos.y;
+    thrustCmd = hoverThrust + altErr * 4.0 - droneState.vel.y * 3.5;
+
+    if (droneState.pos.y <= targetAlt + 0.18 && distHoriz < 1.2) {
+      missionState = 'OUTBOUND_LANDED';
+      onOutboundLanded();
+    }
+  }
+  else if (missionState === 'RETURN_TAKEOFF') {
+    const cruiseAlt = 50.0;
+    thrustCmd = hoverThrust * 1.45;
+    if (droneState.pos.y >= 46.0) {
+      missionState = 'RETURN_CRUISE';
+    }
+  }
+  else if (missionState === 'RETURN_CRUISE') {
+    const targetAlt = 42.0;
+    const dx = AIRPORT_POS.x - droneState.pos.x;
+    const dz = AIRPORT_POS.z - droneState.pos.z;
+    const distHoriz = Math.hypot(dx, dz);
+
+    const goalDir = new THREE.Vector2(dx, dz).normalize().multiplyScalar(35.0);
+    const combinedVector = new THREE.Vector2(goalDir.x + repForce.x, goalDir.y + repForce.z);
+
+    const desiredHeading = Math.atan2(combinedVector.x, combinedVector.y);
+    let headingErr = desiredHeading - droneState.yaw;
+    headingErr = Math.atan2(Math.sin(headingErr), Math.cos(headingErr));
+    yawRateCmd = Math.max(-2.0, Math.min(2.0, headingErr * 2.5));
+
+    pitchCmd = (distHoriz > 18) ? 0.38 : 0.12;
+
+    const altErr = targetAlt + repForce.y - droneState.pos.y;
+    thrustCmd = hoverThrust + altErr * 3.8 - droneState.vel.y * 2.8;
+
+    if (distHoriz < 9.0) {
+      missionState = 'RETURN_DESCENT';
+    }
+  }
+  else if (missionState === 'RETURN_DESCENT') {
+    const targetAlt = 0.4;
+    const dx = AIRPORT_POS.x - droneState.pos.x;
+    const dz = AIRPORT_POS.z - droneState.pos.z;
+    const distHoriz = Math.hypot(dx, dz);
+
+    let headingErr = 0.0 - droneState.yaw;
+    headingErr = Math.atan2(Math.sin(headingErr), Math.cos(headingErr));
+    yawRateCmd = headingErr * 2.0;
+
+    const cosY = Math.cos(droneState.yaw);
+    const sinY = Math.sin(droneState.yaw);
+    const localX =  dx * cosY - dz * sinY;
+    const localZ =  dx * sinY + dz * cosY;
+
+    rollCmd  = Math.max(-0.25, Math.min(0.25, localX * 0.12 - (droneState.vel.x * cosY - droneState.vel.z * sinY) * 0.25));
+    pitchCmd = Math.max(-0.25, Math.min(0.25, localZ * 0.12 - (droneState.vel.x * sinY + droneState.vel.z * cosY) * 0.25));
+
+    const altErr = targetAlt - droneState.pos.y;
+    thrustCmd = hoverThrust + altErr * 3.5 - droneState.vel.y * 3.2;
+
+    if (droneState.pos.y <= targetAlt + 0.2 && distHoriz < 1.5) {
+      missionState = 'RETURN_LANDED';
+      onReturnLanded();
+    }
+  }
+  else if (missionState === 'STANDBY') {
+    if (keys['ArrowUp']) thrustCmd = MAX_THRUST;
+    else if (keys['ArrowDown']) thrustCmd = hoverThrust * 0.4;
+    else if (droneState.pos.y > currentGroundY + 0.1) thrustCmd = hoverThrust;
+
+    if (keys['w'] || keys['W']) pitchCmd = 0.42;
+    if (keys['s'] || keys['S']) pitchCmd = -0.42;
+    if (keys['a'] || keys['A']) rollCmd = 0.42;
+    if (keys['d'] || keys['D']) rollCmd = -0.42;
+    if (keys['ArrowLeft'])  yawRateCmd = 1.6;
+    if (keys['ArrowRight']) yawRateCmd = -1.6;
+  }
+
+  const pitchAcc = (pitchCmd - droneState.pitch) * 12.0 - droneState.pitchRate * ANGULAR_DAMPING;
+  const rollAcc  = (rollCmd  - droneState.roll)  * 12.0 - droneState.rollRate  * ANGULAR_DAMPING;
+
+  droneState.pitchRate += pitchAcc * dt;
+  droneState.rollRate  += rollAcc  * dt;
+  droneState.pitch += droneState.pitchRate * dt;
+  droneState.roll  += droneState.rollRate  * dt;
+
+  droneState.yawRate += (yawRateCmd - droneState.yawRate) * 8.0 * dt;
+  droneState.yaw += droneState.yawRate * dt;
+
+  const cp = Math.cos(droneState.pitch), sp = Math.sin(droneState.pitch);
+  const cr = Math.cos(droneState.roll),  sr = Math.sin(droneState.roll);
+  const cy = Math.cos(droneState.yaw),   sy = Math.sin(droneState.yaw);
+
+  const ux = cy * sr * cp + sy * sp;
+  const uy = cr * cp;
+  const uz = -sy * sr * cp + cy * sp;
+
+  const finalThrust = Math.max(0, thrustCmd) * groundEffect;
+
+  const relVel = droneState.vel.clone().sub(windVector);
+  const dragAcc = relVel.clone().multiplyScalar(-0.5 * DRAG_COEFF * relVel.length() / totalMass);
+
+  const accX = (ux * finalThrust) / totalMass + dragAcc.x;
+  const accY = (uy * finalThrust) / totalMass - GRAVITY + dragAcc.y;
+  const accZ = (uz * finalThrust) / totalMass + dragAcc.z;
+
+  droneState.vel.x += accX * dt;
+  droneState.vel.y += accY * dt;
+  droneState.vel.z += accZ * dt;
+
+  droneState.pos.x += droneState.vel.x * dt;
+  droneState.pos.y += droneState.vel.y * dt;
+  droneState.pos.z += droneState.vel.z * dt;
+
+  if (droneState.pos.y < currentGroundY) {
+    droneState.pos.y = currentGroundY;
+    droneState.vel.y = Math.max(0, droneState.vel.y);
+    droneState.vel.x *= 0.7;
+    droneState.vel.z *= 0.7;
+  }
+
+  updateAudioPitch(droneState.vel.length() / 15.0);
+}
+
+function syncDroneMesh() {
+  droneGroup.position.copy(droneState.pos);
+
+  const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), droneState.yaw);
+  const qX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), droneState.pitch);
+  const qZ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), droneState.roll);
+  droneGroup.quaternion.copy(qY).multiply(qX).multiply(qZ);
+
+  const isSpinning = droneState.pos.y > 0.6 || missionState !== 'STANDBY';
+  const speed = isSpinning ? 0.70 : 0.0;
+  rotors.forEach(r => r.mesh.rotation.y += r.dir * speed);
+
+  if (hospitalPulseRing) {
+    hospitalPulseRing.material.opacity = 0.35 + 0.45 * Math.sin(Date.now() * 0.005);
+  }
+
+  if (airportGroup && airportGroup.userData.radar) {
+    airportGroup.userData.radar.rotation.y += 0.04;
+  }
+
+  if (missionState !== 'STANDBY') {
+    trailPoints.push(droneState.pos.clone());
+    if (trailPoints.length > MAX_TRAIL) trailPoints.shift();
+    const posAttr = flightTrailLine.geometry.attributes.position;
+    for (let i = 0; i < trailPoints.length; i++) {
+      posAttr.setXYZ(i, trailPoints[i].x, trailPoints[i].y, trailPoints[i].z);
+    }
+    flightTrailLine.geometry.setDrawRange(0, trailPoints.length);
+    posAttr.needsUpdate = true;
+  }
+
+  cityVehicles.forEach(v => {
+    v.grp.position.z += v.speed;
+    if (v.grp.position.z > 240) v.grp.position.z = -240;
+    if (v.isAmbulance && v.grp.userData.strobe) {
+      v.grp.userData.strobe.intensity = Math.sin(Date.now() * 0.01) > 0 ? 3.0 : 0.2;
+    }
+  });
+
+  clouds.forEach(c => {
+    c.position.x += 0.08;
+    if (c.position.x > 700) c.position.x = -700;
+  });
+}
+
+function updateCameraSystem() {
+  if (activeCam === 'chase') {
+    const yawQ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), droneState.yaw);
+    const desiredPos = droneState.pos.clone().add(chaseOffset.clone().applyQuaternion(yawQ));
+    camera.position.lerp(desiredPos, 0.08);
+    camTarget.lerp(droneState.pos, 0.15);
+    camera.lookAt(camTarget);
+  }
+  else if (activeCam === 'fpv') {
+    const nosePos = droneState.pos.clone().add(new THREE.Vector3(0, 0.1, -0.6).applyQuaternion(droneGroup.quaternion));
+    camera.position.copy(nosePos);
+    const lookForward = nosePos.clone().add(new THREE.Vector3(0, -0.15, -4).applyQuaternion(droneGroup.quaternion));
+    camera.lookAt(lookForward);
+  }
+  else if (activeCam === 'orbit') {
+    const orbitPos = droneState.pos.clone().add(new THREE.Vector3(22, 16, 22));
+    camera.position.lerp(orbitPos, 0.05);
+    camera.lookAt(droneState.pos);
+  }
+  else if (activeCam === 'tower') {
+    camera.position.set(-28, 42, 25);
+    camera.lookAt(droneState.pos);
+  }
+  else if (activeCam === 'helipad') {
+    camera.position.set(HOSPITAL_POS.x - 8, 43, HOSPITAL_POS.z + 12);
+    camera.lookAt(droneState.pos);
+  }
+}
+
+function switchCamera(mode) {
+  activeCam = mode;
+  document.querySelectorAll('.cam-toolbar .cam-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function setSkyTheme(theme) {
+  const conf = skyColors[theme];
+  scene.background.setHex(conf.bg);
+  scene.fog.color.setHex(conf.fog);
+  sun.color.setHex(conf.sun);
+  ambLight.color.setHex(conf.amb);
+  renderer.toneMappingExposure = conf.exp;
+  document.querySelectorAll('.env-toolbar .cam-btn').forEach(b => {
+    if (b.id !== 'btn-audio') b.classList.remove('active');
+  });
+  event.target.classList.add('active');
+}
+
+const hCanvas = document.getElementById('horizon-canvas');
+const hCtx = hCanvas.getContext('2d');
+
+function drawHorizonPFD() {
+  hCtx.clearRect(0, 0, 62, 62);
+  hCtx.save();
+  hCtx.translate(31, 31);
+  hCtx.rotate(-droneState.roll);
+
+  const pitchOffset = Math.sin(droneState.pitch) * 20;
+
+  hCtx.fillStyle = '#0284c7';
+  hCtx.fillRect(-31, -31, 62, 31 + pitchOffset);
+  hCtx.fillStyle = '#15803d';
+  hCtx.fillRect(-31, pitchOffset, 62, 31 - pitchOffset);
+
+  hCtx.strokeStyle = '#ffffff';
+  hCtx.lineWidth = 1.5;
+  hCtx.beginPath();
+  hCtx.moveTo(-24, pitchOffset);
+  hCtx.lineTo(24, pitchOffset);
+  hCtx.stroke();
+
+  hCtx.restore();
+
+  hCtx.strokeStyle = '#00e5a0';
+  hCtx.lineWidth = 1.5;
+  hCtx.beginPath();
+  hCtx.moveTo(24, 31); hCtx.lineTo(38, 31);
+  hCtx.moveTo(31, 24); hCtx.lineTo(31, 38);
+  hCtx.stroke();
+}
+
+const rCanvas = document.getElementById('radar-canvas');
+const rCtx = rCanvas.getContext('2d');
+
+function drawTacticalRadar() {
+  const W = 90, H = 72;
+  rCtx.clearRect(0, 0, W, H);
+
+  const mapX = (x) => 10 + ((x - (-70)) / 170) * (W - 20);
+  const mapZ = (z) => H - (10 + ((z - (-100)) / 180) * (H - 20));
+
+  rCtx.strokeStyle = 'rgba(255,255,255,0.25)';
+  rCtx.setLineDash([3, 3]);
+  rCtx.beginPath();
+  rCtx.moveTo(mapX(AIRPORT_POS.x), mapZ(AIRPORT_POS.z));
+  rCtx.lineTo(mapX(HOSPITAL_POS.x), mapZ(HOSPITAL_POS.z));
+  rCtx.stroke();
+  rCtx.setLineDash([]);
+
+  rCtx.fillStyle = 'rgba(239, 68, 68, 0.4)';
+  OBSTACLE_VOLUMES.forEach(obs => {
+    rCtx.beginPath();
+    rCtx.arc(mapX(obs.x), mapZ(obs.z), 2.5, 0, Math.PI*2);
+    rCtx.fill();
+  });
+
+  rCtx.fillStyle = '#0099ff';
+  rCtx.beginPath(); rCtx.arc(mapX(AIRPORT_POS.x), mapZ(AIRPORT_POS.z), 3.5, 0, Math.PI*2); rCtx.fill();
+
+  rCtx.fillStyle = '#00e5a0';
+  rCtx.beginPath(); rCtx.arc(mapX(HOSPITAL_POS.x), mapZ(HOSPITAL_POS.z), 3.5, 0, Math.PI*2); rCtx.fill();
+
+  const dx = mapX(droneState.pos.x);
+  const dz = mapZ(droneState.pos.z);
+  rCtx.fillStyle = '#fff';
+  rCtx.beginPath(); rCtx.arc(dx, dz, 3, 0, Math.PI*2); rCtx.fill();
+
+  rCtx.strokeStyle = '#00e5a0';
+  rCtx.lineWidth = 1.5;
+  rCtx.beginPath();
+  rCtx.moveTo(dx, dz);
+  rCtx.lineTo(dx + Math.sin(droneState.yaw)*6, dz - Math.cos(droneState.yaw)*6);
+  rCtx.stroke();
+}
+
+let tempJitter = 4.0;
+function updateHUD() {
+  const speedKmh = (droneState.vel.length() * 3.6).toFixed(1);
+  const distLZ = (missionState.startsWith('RETURN') ? droneState.pos.distanceTo(AIRPORT_POS) : droneState.pos.distanceTo(HOSPITAL_POS)).toFixed(1);
+
+  document.getElementById('hud-alt').textContent = `${Math.max(0, droneState.pos.y).toFixed(1)} m`;
+  document.getElementById('hud-spd').textContent = `${speedKmh} km/h`;
+  document.getElementById('hud-dist').textContent = `${distLZ} m`;
+
+  tempJitter += (Math.random() - 0.5) * 0.02;
+  tempJitter = Math.max(3.9, Math.min(4.1, tempJitter));
+  document.getElementById('hud-temp').textContent = `${tempJitter.toFixed(1)} °C`;
+
+  let phaseName = 'STANDBY';
+  let phaseDesc = 'Position locked at launchpad. 3D waypoint guidance ready.';
+
+  if (missionState === 'OUTBOUND_TAKEOFF') {
+    phaseName = 'TAKEOFF & CLIMB';
+    phaseDesc = 'Ascending to 50m AGL corridor altitude above airport towers.';
+    document.getElementById('st-airport').className = 'step-item active';
+  } else if (missionState === 'OUTBOUND_CRUISE') {
+    phaseName = 'CORRIDOR CRUISE (50m AGL)';
+    phaseDesc = 'Navigating Sabarmati Airway with real-time building avoidance.';
+    document.getElementById('st-airport').className = 'step-item done';
+    document.getElementById('st-river').className = 'step-item active';
+  } else if (missionState === 'OUTBOUND_DESCENT') {
+    phaseName = 'ARUCO PRECISION DESCENT';
+    phaseDesc = 'Optical target acquired on Hospital rooftop pad. Laser altimeter active.';
+    document.getElementById('st-river').className = 'step-item done';
+    document.getElementById('st-hospital').className = 'step-item active';
+  } else if (missionState === 'OUTBOUND_LANDED') {
+    phaseName = 'ORGAN DELIVERED';
+    phaseDesc = 'Precision touchdown verified. Bio-pod received by hospital surgical team.';
+    document.getElementById('st-hospital').className = 'step-item done';
+  } else if (missionState === 'RETURN_TAKEOFF') {
+    phaseName = 'VICE-VERSA RETURN TAKEOFF';
+    phaseDesc = 'Ascending from Civil Hospital pad back into Green Airway.';
+    document.getElementById('st-hospital').className = 'step-item active';
+  } else if (missionState === 'RETURN_CRUISE') {
+    phaseName = 'RETURN CRUISE TO AIRPORT';
+    phaseDesc = 'Returning to SVP Airport Base along Sabarmati Riverway.';
+    document.getElementById('st-hospital').className = 'step-item done';
+    document.getElementById('st-river').className = 'step-item active';
+  } else if (missionState === 'RETURN_DESCENT') {
+    phaseName = 'AIRPORT BASE DESCENT';
+    phaseDesc = 'Entering airport perimeter airspace. Final approach to base launchpad.';
+    document.getElementById('st-river').className = 'step-item done';
+    document.getElementById('st-airport').className = 'step-item active';
+  } else if (missionState === 'RETURN_LANDED') {
+    phaseName = 'BASE RETURN COMPLETE';
+    phaseDesc = 'Touchdown at Airport Base. Full round-trip cycle complete. Battery at 84%.';
+    document.getElementById('st-airport').className = 'step-item done';
+  }
+
+  document.getElementById('hud-phase-title').textContent = phaseName;
+  document.getElementById('hud-phase-sub').textContent = phaseDesc;
+  document.getElementById('hud-status-badge').textContent = missionState === 'STANDBY' ? 'MANUAL / READY' : 'AUTOPILOT ACTIVE';
+
+  drawHorizonPFD();
+  drawTacticalRadar();
+}
+
+function startOutbound() {
+  closeModal();
+  payloadReleased = false;
+  payloadGroup.visible = true;
+  droppedPod.visible = false;
+  trailPoints.length = 0;
+  document.getElementById('hud-payload').textContent = 'Donor Heart Secure';
+  document.getElementById('hud-payload').className = 'm-val amber';
+  missionState = 'OUTBOUND_TAKEOFF';
+}
+
+function startReturn() {
+  closeModal();
+  trailPoints.length = 0;
+  missionState = 'RETURN_TAKEOFF';
+}
+
+function onOutboundLanded() {
+  payloadReleased = true;
+  payloadGroup.visible = false;
+  droppedPod.position.set(droneState.pos.x, 37.75, droneState.pos.z);
+  droppedPod.visible = true;
+
+  const errorM = Math.hypot(droneState.pos.x - HOSPITAL_POS.x, droneState.pos.z - HOSPITAL_POS.z).toFixed(2);
+  document.getElementById('hud-payload').textContent = 'Delivered (IKDRC Helipad)';
+  document.getElementById('hud-payload').className = 'm-val green';
+
+  document.getElementById('modal-icon').textContent = '✅';
+  document.getElementById('modal-title').textContent = 'Organ Delivered!';
+  document.getElementById('modal-acc').textContent = `${errorM} m`;
+  document.getElementById('m-acc').textContent = `${errorM} m`;
+  document.getElementById('modal-desc').innerHTML = 'Precision touchdown locked on <strong>Institute of Kidney Diseases &amp; Research Centre (IKDRC) Rooftop Helipad</strong>. Donor heart received at 4.0°C by surgical team.';
+
+  setTimeout(() => document.getElementById('success-modal').classList.add('show'), 350);
+}
+
+function onReturnLanded() {
+  const errorM = Math.hypot(droneState.pos.x - AIRPORT_POS.x, droneState.pos.z - AIRPORT_POS.z).toFixed(2);
+  document.getElementById('hud-payload').textContent = 'RTB Complete (Airport Base)';
+
+  document.getElementById('modal-icon').textContent = '🛬';
+  document.getElementById('modal-title').textContent = 'Return Flight Complete!';
+  document.getElementById('modal-acc').textContent = `${errorM} m`;
+  document.getElementById('m-acc').textContent = `${errorM} m`;
+  document.getElementById('modal-desc').innerHTML = 'Touchdown confirmed at <strong>SVP Airport Launchpad Base</strong>. Full round-trip mission cycle complete. Battery at 84%. Ready for next emergency dispatch.';
+
+  setTimeout(() => document.getElementById('success-modal').classList.add('show'), 350);
+}
+
+function resetMission() {
+  closeModal();
+  missionState = 'STANDBY';
+  payloadReleased = false;
+  payloadGroup.visible = true;
+  droppedPod.visible = false;
+  trailPoints.length = 0;
+
+  droneState.pos.copy(AIRPORT_POS);
+  droneState.vel.set(0, 0, 0);
+  droneState.pitch = 0; droneState.roll = 0; droneState.yaw = 0;
+  droneState.pitchRate = 0; droneState.rollRate = 0; droneState.yawRate = 0;
+
+  document.getElementById('hud-payload').textContent = 'Donor Heart Secure';
+  document.getElementById('hud-payload').className = 'm-val amber';
+  document.getElementById('st-airport').className = 'step-item active';
+  document.getElementById('st-river').className = 'step-item';
+  document.getElementById('st-hospital').className = 'step-item';
+}
+
+function toggleWind() {
+  windMode = (windMode + 1) % 3;
+  const labels = ['Wind: Calm', 'Wind: Med (3.5m/s)', 'Wind: High (7m/s)'];
+  document.getElementById('wind-label').textContent = labels[windMode];
+  const speeds = [0, 3.5, 7.0];
+  windVector.set(-speeds[windMode] * 0.7, 0, speeds[windMode] * 0.7);
+}
+
+function closeModal() {
+  document.getElementById('success-modal').classList.remove('show');
+}
+
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+
+  physicsStep(dt);
+  syncDroneMesh();
+  updateCameraSystem();
+  updateHUD();
+
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>

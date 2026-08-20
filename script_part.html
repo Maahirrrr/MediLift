@@ -1,0 +1,480 @@
+<script>
+// ============================================================
+// SCROLL REVEAL
+// ============================================================
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ============================================================
+// CANVAS DRAWING UTILITIES
+// ============================================================
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+// ============================================================
+// HERO CANVAS — mini route animation
+// ============================================================
+const heroCanvas = document.getElementById('hero-canvas');
+const hCtx = heroCanvas.getContext('2d');
+
+function resizeHeroCanvas() {
+  const wrap = heroCanvas.parentElement;
+  heroCanvas.width = wrap.clientWidth * devicePixelRatio;
+  heroCanvas.height = 400 * devicePixelRatio;
+  heroCanvas.style.height = '400px';
+  hCtx.scale(devicePixelRatio, devicePixelRatio);
+}
+window.addEventListener('resize', () => { resizeHeroCanvas(); });
+resizeHeroCanvas();
+
+// ============================================================
+// ROUTE CANVAS — full Ahmedabad map animation
+// ============================================================
+const routeCanvas = document.getElementById('route-canvas');
+const rCtx = routeCanvas.getContext('2d');
+
+function resizeRouteCanvas() {
+  const wrap = routeCanvas.parentElement;
+  routeCanvas.width = wrap.clientWidth * devicePixelRatio;
+  routeCanvas.height = 480 * devicePixelRatio;
+  routeCanvas.style.height = '480px';
+  rCtx.scale(devicePixelRatio, devicePixelRatio);
+}
+window.addEventListener('resize', () => { resizeRouteCanvas(); });
+resizeRouteCanvas();
+
+// ============================================================
+// SHARED: Draw a mini drone top-view at (x,y), scale, rotation
+// ============================================================
+function drawDrone(ctx, x, y, scale, rotation, rotorAngle) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(rotation);
+  ctx.scale(scale, scale);
+
+  const armLen = 22;
+  const armW   = 3;
+  const rotorR = 14;
+
+  // Arms (X pattern)
+  const angles = [Math.PI/4, -Math.PI/4, 3*Math.PI/4, -3*Math.PI/4];
+  const motorPos = angles.map(a => ({ x: Math.cos(a)*armLen, y: Math.sin(a)*armLen }));
+
+  ctx.strokeStyle = '#445566';
+  ctx.lineWidth = armW;
+  ctx.lineCap = 'round';
+  motorPos.forEach(mp => {
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(mp.x, mp.y); ctx.stroke();
+  });
+
+  // Rotors
+  motorPos.forEach((mp, i) => {
+    const dir = i % 2 === 0 ? 1 : -1;
+    ctx.save();
+    ctx.translate(mp.x, mp.y);
+
+    // Rotor disc (transparent ring)
+    ctx.beginPath();
+    ctx.arc(0, 0, rotorR, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(0,229,160,0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(0,229,160,0.06)';
+    ctx.fill();
+
+    // Spinning blades
+    ctx.rotate(rotorAngle * dir);
+    for (let b = 0; b < 2; b++) {
+      ctx.rotate(Math.PI);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.ellipse(rotorR * 0.7, 0, rotorR * 0.85, 3, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(200,220,255,0.55)';
+      ctx.fill();
+    }
+    // Hub
+    ctx.beginPath(); ctx.arc(0, 0, 3.5, 0, Math.PI*2);
+    ctx.fillStyle = '#00e5a0'; ctx.fill();
+
+    ctx.restore();
+  });
+
+  // Body
+  const bSize = 9;
+  ctx.fillStyle = '#1a2a3a';
+  ctx.beginPath();
+  ctx.roundRect(-bSize, -bSize, bSize*2, bSize*2, 4);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,229,160,0.4)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Front indicator
+  ctx.fillStyle = '#00e5a0';
+  ctx.beginPath();
+  ctx.moveTo(0, -bSize - 4);
+  ctx.lineTo(-3, -bSize);
+  ctx.lineTo(3, -bSize);
+  ctx.closePath();
+  ctx.fill();
+
+  // Glow under body
+  const grd = ctx.createRadialGradient(0, 0, 0, 0, 0, 20);
+  grd.addColorStop(0, 'rgba(0,229,160,0.25)');
+  grd.addColorStop(1, 'rgba(0,229,160,0)');
+  ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI*2);
+  ctx.fillStyle = grd; ctx.fill();
+
+  ctx.restore();
+}
+
+// ============================================================
+// SHARED: Draw building with label
+// ============================================================
+function drawBuilding(ctx, x, y, w, h, color, label, sublabel, icon) {
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath(); ctx.roundRect(x - w/2 + 3, y - h/2 + 3, w, h, 6); ctx.fill();
+
+  // Building
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.roundRect(x - w/2, y - h/2, w, h, 6); ctx.fill();
+
+  // Windows
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  for (let wy = 0; wy < 3; wy++) {
+    for (let wx = 0; wx < 3; wx++) {
+      ctx.fillRect(x - w/2 + 6 + wx*10, y - h/2 + 6 + wy*10, 7, 6);
+    }
+  }
+
+  // Icon
+  ctx.font = '18px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(icon, x, y + 5);
+
+  // Label box
+  ctx.fillStyle = 'rgba(10,15,26,0.92)';
+  const lw = Math.max(ctx.measureText(label).width + 20, ctx.measureText(sublabel).width + 20);
+  ctx.beginPath(); ctx.roundRect(x - lw/2, y + h/2 + 8, lw, 36, 6); ctx.fill();
+  ctx.strokeStyle = 'rgba(0,229,160,0.4)'; ctx.lineWidth = 1; ctx.stroke();
+
+  ctx.fillStyle = '#f0f2f6';
+  ctx.font = 'bold 12px Inter, sans-serif';
+  ctx.fillText(label, x, y + h/2 + 22);
+  ctx.fillStyle = 'rgba(0,229,160,0.8)';
+  ctx.font = '10px Inter, sans-serif';
+  ctx.fillText(sublabel, x, y + h/2 + 35);
+}
+
+// ============================================================
+// ROUTE BEZIER CURVE
+// ============================================================
+// SVP Airport: top-right area; Civil Hospital: center-left
+// Canvas is ~1000 wide × 480 tall (logical pixels)
+const routePts = {
+  airport: { x: 0.72, y: 0.18 },  // relative to canvas
+  hospital: { x: 0.24, y: 0.72 },
+  ctrl1:   { x: 0.72, y: 0.5  },
+  ctrl2:   { x: 0.45, y: 0.72 },
+};
+
+function getRoutePoint(t, W, H) {
+  const p0 = { x: routePts.airport.x * W, y: routePts.airport.y * H };
+  const p1 = { x: routePts.ctrl1.x * W,  y: routePts.ctrl1.y * H };
+  const p2 = { x: routePts.ctrl2.x * W,  y: routePts.ctrl2.y * H };
+  const p3 = { x: routePts.hospital.x * W, y: routePts.hospital.y * H };
+
+  const u = 1 - t;
+  return {
+    x: u*u*u*p0.x + 3*u*u*t*p1.x + 3*u*t*t*p2.x + t*t*t*p3.x,
+    y: u*u*u*p0.y + 3*u*u*t*p1.y + 3*u*t*t*p2.y + t*t*t*p3.y,
+  };
+}
+
+function getRouteTangent(t, W, H) {
+  const p0 = { x: routePts.airport.x * W, y: routePts.airport.y * H };
+  const p1 = { x: routePts.ctrl1.x * W,  y: routePts.ctrl1.y * H };
+  const p2 = { x: routePts.ctrl2.x * W,  y: routePts.ctrl2.y * H };
+  const p3 = { x: routePts.hospital.x * W, y: routePts.hospital.y * H };
+
+  const u = 1 - t;
+  const dx = 3*(u*u*(p1.x-p0.x) + 2*u*t*(p2.x-p1.x) + t*t*(p3.x-p2.x));
+  const dy = 3*(u*u*(p1.y-p0.y) + 2*u*t*(p2.y-p1.y) + t*t*(p3.y-p2.y));
+  return Math.atan2(dy, dx);
+}
+
+// ============================================================
+// MAIN ANIMATION
+// ============================================================
+let animT = 0;          // 0=airport, 1=hospital
+let animState = 'fly';  // fly | pause_land | pause_start
+let animPauseTimer = 0;
+let rotorAngle = 0;
+let trailPts = [];
+const TRAIL_MAX = 60;
+
+function drawCityBackground(ctx, W, H) {
+  // Dark gradient background
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#050b18');
+  bg.addColorStop(1, '#0a1525');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // City watermark text
+  ctx.save();
+  ctx.globalAlpha = 0.03;
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 120px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('AHMEDABAD', W/2, H/2);
+  ctx.restore();
+
+  // Grid lines (city streets, very subtle)
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  for (let gx = 0; gx < W; gx += 40) {
+    ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke();
+  }
+  for (let gy = 0; gy < H; gy += 40) {
+    ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke();
+  }
+
+  // City block silhouettes
+  const blocks = [
+    [0.35,0.35,40,60,'#0d1a2e'],[0.42,0.28,30,50,'#0c1828'],[0.5,0.4,50,40,'#0b1726'],
+    [0.55,0.55,35,45,'#0d1a2e'],[0.6,0.3,25,55,'#0a1522'],[0.3,0.5,45,35,'#0c1828'],
+    [0.45,0.6,30,40,'#0b1726'],[0.65,0.48,40,30,'#0d1a2e'],[0.38,0.62,25,45,'#0a1522'],
+    [0.52,0.25,20,35,'#0c1828'],[0.28,0.38,35,40,'#0b1726'],
+  ];
+  blocks.forEach(([rx, ry, bw, bh, c]) => {
+    ctx.fillStyle = c;
+    ctx.fillRect(rx*W - bw/2, ry*H - bh/2, bw, bh);
+  });
+}
+
+function drawRouteCorridorLine(ctx, W, H, drawnT) {
+  // Glowing dotted path (full route faded)
+  ctx.save();
+  ctx.setLineDash([8, 10]);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = 'rgba(0,229,160,0.12)';
+  ctx.beginPath();
+  const p0 = getRoutePoint(0, W, H);
+  ctx.moveTo(p0.x, p0.y);
+  for (let i = 1; i <= 60; i++) {
+    const pt = getRoutePoint(i/60, W, H);
+    ctx.lineTo(pt.x, pt.y);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Drawn (traveled) portion
+  if (drawnT > 0) {
+    ctx.lineWidth = 3;
+    const grad = ctx.createLinearGradient(
+      getRoutePoint(0,W,H).x, getRoutePoint(0,W,H).y,
+      getRoutePoint(drawnT,W,H).x, getRoutePoint(drawnT,W,H).y
+    );
+    grad.addColorStop(0, 'rgba(0,229,160,0.0)');
+    grad.addColorStop(1, 'rgba(0,229,160,0.7)');
+    ctx.strokeStyle = grad;
+    ctx.beginPath();
+    const s0 = getRoutePoint(0, W, H);
+    ctx.moveTo(s0.x, s0.y);
+    for (let i = 1; i <= Math.floor(drawnT*60); i++) {
+      const pt = getRoutePoint(i/60, W, H);
+      ctx.lineTo(pt.x, pt.y);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawTrail(ctx) {
+  if (trailPts.length < 2) return;
+  for (let i = 1; i < trailPts.length; i++) {
+    const alpha = (i / trailPts.length) * 0.6;
+    ctx.beginPath();
+    ctx.moveTo(trailPts[i-1].x, trailPts[i-1].y);
+    ctx.lineTo(trailPts[i].x, trailPts[i].y);
+    ctx.strokeStyle = `rgba(0,229,160,${alpha})`;
+    ctx.lineWidth = 2.5 * (i / trailPts.length);
+    ctx.stroke();
+  }
+}
+
+function drawEndpointPulse(ctx, x, y, t, color) {
+  const r1 = 12 + 8 * Math.sin(t * 3);
+  const r2 = 22 + 8 * Math.sin(t * 3 + 1);
+  ctx.beginPath(); ctx.arc(x, y, r2, 0, Math.PI*2);
+  ctx.fillStyle = `rgba(${color},0.05)`; ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y, r1, 0, Math.PI*2);
+  ctx.fillStyle = `rgba(${color},0.12)`; ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2);
+  ctx.fillStyle = `rgb(${color})`; ctx.fill();
+}
+
+function drawDistanceLabel(ctx, W, H) {
+  // Find midpoint of route
+  const mid = getRoutePoint(0.5, W, H);
+  ctx.save();
+  ctx.fillStyle = 'rgba(8,13,21,0.88)';
+  ctx.strokeStyle = 'rgba(0,229,160,0.35)';
+  ctx.lineWidth = 1;
+  const lw = 140, lh = 34;
+  ctx.beginPath(); ctx.roundRect(mid.x - lw/2, mid.y - lh/2, lw, lh, 8);
+  ctx.fill(); ctx.stroke();
+
+  ctx.fillStyle = '#00e5a0';
+  ctx.font = 'bold 12px Inter, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('5.4 km · 18 min', mid.x, mid.y - 4);
+  ctx.fillStyle = 'rgba(240,242,246,0.4)';
+  ctx.font = '10px Inter, sans-serif';
+  ctx.fillText('120m AGL · 45 km/h cruise', mid.x, mid.y + 9);
+  ctx.restore();
+}
+
+let lastTime = 0;
+const FLY_DURATION = 6.0;  // seconds to fly from airport to hospital
+const PAUSE_DURATION = 1.5; // seconds to pause at each end
+
+function animateRoute(timestamp) {
+  const dt = Math.min((timestamp - lastTime) / 1000, 0.05);
+  lastTime = timestamp;
+  rotorAngle += dt * 8;
+
+  // Canvas dimensions
+  const W = routeCanvas.width / devicePixelRatio;
+  const H = routeCanvas.height / devicePixelRatio;
+  const hW = heroCanvas.width / devicePixelRatio;
+  const hH = heroCanvas.height / devicePixelRatio;
+
+  // State machine
+  if (animState === 'fly') {
+    animT += dt / FLY_DURATION;
+    if (animT >= 1) {
+      animT = 1;
+      animState = 'pause_land';
+      animPauseTimer = 0;
+    }
+  } else if (animState === 'pause_land') {
+    animPauseTimer += dt;
+    if (animPauseTimer >= PAUSE_DURATION) {
+      animT = 0;
+      trailPts = [];
+      animState = 'pause_start';
+      animPauseTimer = 0;
+    }
+  } else if (animState === 'pause_start') {
+    animPauseTimer += dt;
+    if (animPauseTimer >= PAUSE_DURATION * 0.5) {
+      animState = 'fly';
+    }
+  }
+
+  // Ease-in-out
+  const eased = animT < 0.5
+    ? 4 * animT * animT * animT
+    : 1 - Math.pow(-2 * animT + 2, 3) / 2;
+
+  // Current drone position
+  const dronePos = getRoutePoint(eased, W, H);
+  const droneTangent = getRouteTangent(eased, W, H);
+
+  // Update trail
+  if (animState === 'fly') {
+    trailPts.push({ x: dronePos.x, y: dronePos.y });
+    if (trailPts.length > TRAIL_MAX) trailPts.shift();
+  }
+
+  // ── DRAW FULL ROUTE CANVAS ──
+  rCtx.clearRect(0, 0, W, H);
+  drawCityBackground(rCtx, W, H);
+  drawRouteCorridorLine(rCtx, W, H, eased);
+  drawTrail(rCtx);
+
+  // Airport position
+  const airportPos = getRoutePoint(0, W, H);
+  const hospitalPos = getRoutePoint(1, W, H);
+
+  // Endpoint pulses
+  drawEndpointPulse(rCtx, airportPos.x, airportPos.y, timestamp/1000, '0,229,160');
+  drawEndpointPulse(rCtx, hospitalPos.x, hospitalPos.y, timestamp/1000 + 1, '0,153,255');
+
+  // Buildings
+  drawBuilding(rCtx, airportPos.x, airportPos.y - 70, 90, 44, '#1a2d4a', 'SVP International Airport', 'Ahmedabad · AMD', '✈️');
+  drawBuilding(rCtx, hospitalPos.x, hospitalPos.y - 70, 90, 44, '#1a3a2a', 'Civil Hospital', 'Asarwa, Ahmedabad', '🏥');
+
+  // Distance label at midpoint
+  drawDistanceLabel(rCtx, W, H);
+
+  // Drone
+  if (animState !== 'pause_start') {
+    drawDrone(rCtx, dronePos.x, dronePos.y, 1.5, droneTangent + Math.PI/2, rotorAngle);
+  } else {
+    // Show drone at airport
+    const startPos = getRoutePoint(0, W, H);
+    drawDrone(rCtx, startPos.x, startPos.y, 1.5, -Math.PI/2, rotorAngle);
+  }
+
+  // Landing success flash at hospital
+  if (animState === 'pause_land' && animPauseTimer < 0.8) {
+    const hp = getRoutePoint(1, W, H);
+    const alpha = Math.max(0, 1 - animPauseTimer / 0.8);
+    rCtx.beginPath(); rCtx.arc(hp.x, hp.y, 30 + animPauseTimer * 40, 0, Math.PI*2);
+    rCtx.fillStyle = `rgba(0,229,160,${alpha * 0.2})`; rCtx.fill();
+  }
+
+  // ── DRAW HERO CANVAS (smaller) ──
+  hCtx.clearRect(0, 0, hW, hH);
+  // Scale for hero
+  const scaleX = hW / W;
+  const scaleY = hH / H;
+  const scale = Math.min(scaleX, scaleY);
+
+  hCtx.save();
+  hCtx.scale(scale, scale);
+  drawCityBackground(hCtx, W, H);
+  drawRouteCorridorLine(hCtx, W, H, eased);
+
+  // Trail scaled
+  if (trailPts.length > 1) {
+    for (let i = 1; i < trailPts.length; i++) {
+      const a = (i / trailPts.length) * 0.5;
+      hCtx.beginPath();
+      hCtx.moveTo(trailPts[i-1].x, trailPts[i-1].y);
+      hCtx.lineTo(trailPts[i].x, trailPts[i].y);
+      hCtx.strokeStyle = `rgba(0,229,160,${a})`;
+      hCtx.lineWidth = 2;
+      hCtx.stroke();
+    }
+  }
+
+  // Pulsing endpoints
+  drawEndpointPulse(hCtx, airportPos.x, airportPos.y, timestamp/1000, '0,229,160');
+  drawEndpointPulse(hCtx, hospitalPos.x, hospitalPos.y, timestamp/1000 + 1, '0,153,255');
+
+  // Mini labels
+  hCtx.fillStyle = 'rgba(0,229,160,0.8)';
+  hCtx.font = 'bold 11px Inter, sans-serif';
+  hCtx.textAlign = 'center';
+  hCtx.fillText('✈ SVP Airport', airportPos.x, airportPos.y - 18);
+  hCtx.fillStyle = 'rgba(0,153,255,0.8)';
+  hCtx.fillText('🏥 Civil Hospital', hospitalPos.x, hospitalPos.y - 18);
+
+  if (animState !== 'pause_start') {
+    drawDrone(hCtx, dronePos.x, dronePos.y, 1.2, droneTangent + Math.PI/2, rotorAngle);
+  }
+
+  hCtx.restore();
+
+  requestAnimationFrame(animateRoute);
+}
+requestAnimationFrame(animateRoute);
+</script>
