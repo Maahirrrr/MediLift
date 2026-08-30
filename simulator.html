@@ -40,181 +40,294 @@
       gap: 10px; flex-wrap: wrap;
     }
     .glass-pill {
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(6, 10, 22, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.10);
       border-radius: 100px;
-      backdrop-filter: blur(20px) saturate(180%);
-      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      backdrop-filter: blur(24px) saturate(200%);
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
       pointer-events: auto;
     }
 
     .brand-container {
       display: flex; align-items: center; gap: 10px;
-      padding: 8px 16px;
+      padding: 8px 18px 8px 10px;
     }
     .brand-icon {
-      width: 32px; height: 32px; border-radius: 8px;
-      background: linear-gradient(135deg, #00b37e, #00e5a0);
+      width: 34px; height: 34px; border-radius: 9px;
+      background: linear-gradient(135deg, #059669, #00e5a0);
       display: flex; align-items: center; justify-content: center;
-      font-size: 16px; box-shadow: 0 0 16px rgba(0, 229, 160, 0.45);
+      font-size: 17px;
+      box-shadow: 0 0 20px rgba(0, 229, 160, 0.5), 0 4px 12px rgba(0,0,0,0.4);
       flex-shrink: 0;
     }
-    .brand-text { font-size: 13.5px; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
-    .brand-sub { font-size: 10.5px; color: #94a3b8; font-weight: 500; }
+    .brand-text { font-size: 14px; font-weight: 800; color: #fff; letter-spacing: -0.03em; }
+    .brand-sub { font-size: 10px; color: #64748b; font-weight: 500; }
 
     /* Stepper */
     .corridor-stepper {
       display: flex; align-items: center; gap: 6px;
-      padding: 8px 16px;
+      padding: 9px 18px;
     }
     .step-item {
       display: flex; align-items: center; gap: 5px;
-      font-size: 11px; font-weight: 700; color: #64748b;
+      font-size: 11px; font-weight: 700; color: #334155;
       transition: color 0.3s;
     }
     .step-item.active { color: #00e5a0; }
     .step-item.done { color: #38bdf8; }
     .step-dot {
-      width: 7px; height: 7px; border-radius: 50%; background: #334155;
+      width: 7px; height: 7px; border-radius: 50%; background: #1e293b;
+      transition: all 0.3s;
     }
     .step-item.active .step-dot {
       background: #00e5a0; box-shadow: 0 0 10px #00e5a0;
       animation: pulseDot 1.4s infinite;
     }
-    .step-item.done .step-dot { background: #38bdf8; }
-    @keyframes pulseDot { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.4);opacity:0.4;} }
-    .step-line { width: 10px; height: 1.5px; background: rgba(255,255,255,0.12); }
+    .step-item.done .step-dot { background: #38bdf8; box-shadow: 0 0 8px rgba(56,189,248,0.6); }
+    @keyframes pulseDot { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.5);opacity:0.3;} }
+    .step-line { width: 18px; height: 1px; background: rgba(255,255,255,0.08); }
 
     /* Camera Switcher & Toolbars */
     .cam-toolbar, .env-toolbar {
-      display: flex; align-items: center; gap: 3px;
-      padding: 4px;
+      display: flex; align-items: center; gap: 2px;
+      padding: 5px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
     }
+    .cam-toolbar::-webkit-scrollbar, .env-toolbar::-webkit-scrollbar { display: none; }
     .cam-btn {
-      background: transparent; border: none; color: #94a3b8;
-      padding: 6px 11px; border-radius: 100px; font-size: 11px; font-weight: 600;
-      cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      white-space: nowrap;
-      min-height: 32px;
+      background: transparent; border: none; color: #475569;
+      padding: 6px 12px; border-radius: 100px; font-size: 11px; font-weight: 600;
+      cursor: pointer; transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap; min-height: 30px; font-family: 'Inter', sans-serif;
     }
-    .cam-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .cam-btn:hover { background: rgba(255,255,255,0.07); color: #e2e8f0; }
     .cam-btn.active {
-      background: #00b37e; color: #020617; font-weight: 800;
-      box-shadow: 0 0 14px rgba(0, 179, 126, 0.5);
+      background: linear-gradient(135deg, #059669, #00b37e);
+      color: #ecfdf5; font-weight: 800;
+      box-shadow: 0 0 16px rgba(0, 179, 126, 0.45), 0 2px 8px rgba(0,0,0,0.3);
     }
 
     /* Mobile HUD Toggle Button */
     .mobile-hud-toggle {
       display: none;
       pointer-events: auto;
-      padding: 8px 14px;
+      padding: 8px 16px;
       border-radius: 100px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(6, 10, 22, 0.92);
+      border: 1px solid rgba(0,229,160,0.3);
       color: #00e5a0;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 700;
       cursor: pointer;
       align-items: center;
       gap: 6px;
     }
 
+    /* ── LIVE MISSION STATUS TICKER ── */
+    #mission-ticker {
+      position: absolute;
+      top: 70px; left: 50%; transform: translateX(-50%);
+      z-index: 110;
+      pointer-events: none;
+    }
+    .ticker-inner {
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(3, 7, 18, 0.85);
+      border: 1px solid rgba(0,229,160,0.25);
+      border-radius: 100px;
+      padding: 7px 22px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 0 30px rgba(0,229,160,0.12), 0 8px 24px rgba(0,0,0,0.6);
+      white-space: nowrap;
+    }
+    .ticker-live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #ef4444;
+      animation: pulseDot 1s infinite;
+      box-shadow: 0 0 10px #ef4444;
+      flex-shrink: 0;
+    }
+    .ticker-live-label {
+      font-size: 9.5px; font-weight: 900; text-transform: uppercase;
+      letter-spacing: 0.14em; color: #ef4444;
+    }
+    .ticker-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.12); }
+    .ticker-phase {
+      font-size: 12px; font-weight: 700; color: #00e5a0;
+      letter-spacing: -0.01em;
+    }
+    .ticker-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; font-weight: 600; color: #cbd5e1;
+    }
+    .ticker-key { color: #475569; font-size: 9.5px; font-weight: 700; margin-right: 3px; }
+
     /* ── BOTTOM HUD GRID ── */
     .bottom-hud {
       display: grid;
-      grid-template-columns: 320px 1fr 270px;
-      gap: 14px;
+      grid-template-columns: 295px 1fr 255px;
+      gap: 10px;
       align-items: flex-end;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .hud-card {
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 16px;
-      backdrop-filter: blur(20px) saturate(180%);
-      box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6);
+      background: rgba(4, 8, 20, 0.90);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      backdrop-filter: blur(28px) saturate(180%);
+      box-shadow: 0 24px 56px -16px rgba(0, 0, 0, 0.85),
+                  0 0 0 1px rgba(255,255,255,0.03) inset,
+                  0 1px 0 rgba(255,255,255,0.06) inset;
       pointer-events: auto;
+      overflow: hidden;
     }
 
-    .pfd-card { padding: 14px 16px; }
+    /* ── PFD TELEMETRY CARD ── */
+    .pfd-card { padding: 14px 15px 10px; }
     .pfd-header {
       display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
-    .pfd-title { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; }
+    .pfd-title {
+      font-size: 9px; font-weight: 900; text-transform: uppercase;
+      letter-spacing: 0.14em; color: #334155;
+    }
     .safety-tag {
-      font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 6px;
-      background: rgba(0, 229, 160, 0.15); color: #00e5a0; border: 1px solid rgba(0, 229, 160, 0.3);
+      font-size: 9px; font-weight: 800; padding: 3px 9px; border-radius: 6px;
+      background: rgba(0, 229, 160, 0.1); color: #00e5a0;
+      border: 1px solid rgba(0, 229, 160, 0.22);
+      letter-spacing: 0.06em;
+      animation: tagPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes tagPulse {
+      0%,100%{ opacity: 1; }
+      50%{ opacity: 0.65; }
     }
 
     .pfd-content {
-      display: grid; grid-template-columns: 1fr 64px; gap: 12px; align-items: center;
+      display: grid; grid-template-columns: 1fr 66px; gap: 12px; align-items: center;
     }
     .metric-rows {
-      display: flex; flex-direction: column; gap: 5px; font-size: 11.5px;
+      display: flex; flex-direction: column; gap: 0;
     }
-    .metric-row { display: flex; justify-content: space-between; align-items: center; }
-    .m-label { color: #94a3b8; font-weight: 500; }
-    .m-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #f8fafc; }
-    .m-val.green { color: #00e5a0; }
+    .metric-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .metric-row:last-child { border-bottom: none; }
+    .m-label {
+      color: #475569; font-weight: 500; font-size: 10.5px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .m-label-icon { font-size: 10px; }
+    .m-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #e2e8f0; font-size: 11.5px; }
+    .m-val.green { color: #10b981; }
     .m-val.blue { color: #38bdf8; }
     .m-val.amber { color: #f59e0b; }
+    .m-val.red { color: #ef4444; }
 
+    .horizon-wrapper {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
     #horizon-canvas {
-      width: 62px; height: 62px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.2);
-      box-shadow: 0 0 16px rgba(0,0,0,0.6);
+      width: 64px; height: 64px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.15);
+      box-shadow: 0 0 24px rgba(0,0,0,0.9), 0 0 16px rgba(0,229,160,0.08);
       background: #000;
     }
+    .horizon-label {
+      font-size: 8px; font-weight: 800; color: #334155; letter-spacing: 0.12em;
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-    /* Radar Mini-Map Center */
+    /* ── CENTER RADAR CARD ── */
     .radar-card {
-      padding: 12px 16px;
+      padding: 14px 18px;
       display: flex; align-items: center; justify-content: space-between;
-      gap: 14px;
+      gap: 16px;
     }
-    .radar-canvas-box { position: relative; width: 90px; height: 72px; flex-shrink: 0; }
+    .radar-section { display: flex; flex-direction: column; gap: 6px; align-items: center; flex-shrink: 0; }
+    .radar-canvas-box { position: relative; width: 94px; height: 74px; }
     #radar-canvas {
-      width: 100%; height: 100%; border-radius: 8px;
-      background: #090e17; border: 1px solid rgba(255,255,255,0.12);
+      width: 100%; height: 100%; border-radius: 10px;
+      background: #030712;
+      border: 1px solid rgba(0,229,160,0.18);
+      box-shadow: 0 0 16px rgba(0,229,160,0.06) inset;
     }
-    .radar-details { display: flex; flex-direction: column; gap: 3px; font-size: 11px; }
-    .phase-badge-text { font-size: 12px; font-weight: 800; color: #00e5a0; letter-spacing: -0.01em; }
-    .phase-sub-text { color: #94a3b8; font-size: 10.5px; }
+    .radar-label {
+      font-size: 8px; font-weight: 900; color: #1e293b; letter-spacing: 0.12em;
+      font-family: 'JetBrains Mono', monospace; text-transform: uppercase;
+    }
+    .radar-details { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .phase-badge-text {
+      font-size: 12px; font-weight: 800; color: #00e5a0; letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+    .phase-sub-text { color: #475569; font-size: 10px; line-height: 1.5; }
+    .gps-coords {
+      display: flex; gap: 10px; margin-top: 4px;
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      color: #334155;
+    }
+    .gps-coords strong { color: #64748b; }
 
-    /* Action Buttons Panel */
+    /* ── CONTROLS CARD ── */
     .action-card {
-      display: flex; flex-direction: column; gap: 7px;
-      padding: 12px;
+      display: flex; flex-direction: column; gap: 8px;
+      padding: 14px;
+    }
+    .action-card-header {
+      font-size: 9px; font-weight: 900; text-transform: uppercase;
+      letter-spacing: 0.14em; color: #334155; margin-bottom: 2px;
     }
     .btn-act {
-      padding: 10px 14px; border-radius: 10px;
+      padding: 11px 14px; border-radius: 12px;
       font-size: 11.5px; font-weight: 800; cursor: pointer; border: none;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
-      min-height: 38px;
+      min-height: 40px; font-family: 'Inter', sans-serif;
+      letter-spacing: -0.01em; position: relative; overflow: hidden;
+    }
+    .btn-act::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, transparent 60%);
+      pointer-events: none;
     }
     .btn-act-green {
-      background: linear-gradient(135deg, #00b37e, #00e5a0);
-      color: #020617;
+      background: linear-gradient(160deg, #059669 0%, #00b37e 50%, #00c98a 100%);
+      color: #ecfdf5;
+      box-shadow: 0 4px 20px rgba(0, 179, 126, 0.35), 0 1px 0 rgba(255,255,255,0.15) inset;
     }
-    .btn-act-green:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 229, 160, 0.45); }
+    .btn-act-green:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 229, 160, 0.5);
+    }
+    .btn-act-green:active { transform: translateY(0); }
 
     .btn-act-blue {
-      background: linear-gradient(135deg, #0284c7, #38bdf8);
-      color: #020617;
+      background: linear-gradient(160deg, #0369a1 0%, #0284c7 50%, #0ea5e9 100%);
+      color: #e0f2fe;
+      box-shadow: 0 4px 20px rgba(56, 189, 248, 0.3), 0 1px 0 rgba(255,255,255,0.12) inset;
     }
-    .btn-act-blue:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(56, 189, 248, 0.45); }
+    .btn-act-blue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(56, 189, 248, 0.45);
+    }
+    .btn-act-blue:active { transform: translateY(0); }
 
     .btn-act-sub {
-      background: rgba(255,255,255,0.06); color: #cbd5e1;
-      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05); color: #64748b;
+      border: 1px solid rgba(255,255,255,0.08);
     }
-    .btn-act-sub:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .btn-act-sub:hover { background: rgba(255,255,255,0.09); color: #94a3b8; border-color: rgba(255,255,255,0.14); }
+    .btn-row { display: flex; gap: 7px; }
+    .btn-row .btn-act { flex: 1; font-size: 10.5px; padding: 9px 8px; }
 
     /* Mobile Touch D-Pad Controls */
     #mobile-dpad {
@@ -227,60 +340,85 @@
     }
     .dpad-grid {
       display: grid;
-      grid-template-columns: repeat(3, 46px);
-      grid-template-rows: repeat(3, 46px);
+      grid-template-columns: repeat(3, 48px);
+      grid-template-rows: repeat(3, 48px);
       gap: 6px;
-      background: rgba(15, 23, 42, 0.85);
-      padding: 8px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.15);
-      backdrop-filter: blur(12px);
+      background: rgba(4, 8, 20, 0.92);
+      padding: 10px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(16px);
     }
     .dpad-btn {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
       border-radius: 12px;
-      color: #fff;
+      color: #94a3b8;
       font-size: 16px;
       font-weight: bold;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       user-select: none;
       touch-action: manipulation;
+      transition: all 0.1s;
     }
     .dpad-btn:active {
-      background: #00b37e;
-      color: #020617;
+      background: linear-gradient(135deg, #059669, #00b37e);
+      color: #ecfdf5;
+      border-color: transparent;
+      box-shadow: 0 0 16px rgba(0,229,160,0.5);
     }
 
-    /* ── SUCCESS MODAL ── */
+    /* ── MISSION COMPLETE MODAL ── */
     #success-modal {
       position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(0.95);
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid #00e5a0;
-      border-radius: 20px; padding: 24px 28px; text-align: center;
-      backdrop-filter: blur(24px); opacity: 0; pointer-events: none;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      max-width: 420px; width: 90%;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.85), 0 0 35px rgba(0, 229, 160, 0.25);
+      transform: translate(-50%, -50%) scale(0.85);
+      background: rgba(3, 6, 16, 0.97);
+      border: 1px solid rgba(0, 229, 160, 0.35);
+      border-radius: 24px; padding: 32px 30px 28px; text-align: center;
+      backdrop-filter: blur(40px); opacity: 0; pointer-events: none;
+      transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-width: 440px; width: 90%;
+      box-shadow: 0 50px 120px rgba(0,0,0,0.95),
+                  0 0 80px rgba(0, 229, 160, 0.18),
+                  0 0 0 1px rgba(0,229,160,0.15) inset;
       z-index: 200;
     }
     #success-modal.show {
       opacity: 1; transform: translate(-50%, -50%) scale(1);
       pointer-events: auto;
     }
+    .modal-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.25);
+      border-radius: 100px; padding: 5px 16px;
+      font-size: 9.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.12em;
+      color: #00e5a0; margin-bottom: 16px;
+    }
+    .modal-icon-big { font-size: 48px; margin-bottom: 8px; display: block; }
+    .modal-title-main { font-size: 22px; font-weight: 900; color: #fff; margin-bottom: 4px; letter-spacing: -0.04em; }
     .modal-acc {
-      font-size: 32px; font-weight: 900; color: #00e5a0;
-      font-family: 'JetBrains Mono', monospace; margin: 6px 0;
+      font-size: 44px; font-weight: 900; color: #00e5a0;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.05em; margin: 10px 0 4px;
+      text-shadow: 0 0 32px rgba(0,229,160,0.6);
     }
+    .modal-acc-label { font-size: 10px; color: #475569; margin-bottom: 20px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
     .modal-stats {
-      background: rgba(255,255,255,0.05); border-radius: 10px;
-      padding: 10px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
-      text-align: left; font-size: 11px; margin-bottom: 16px;
+      background: rgba(255,255,255,0.03); border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.07);
+      padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      text-align: left; margin-bottom: 20px;
     }
+    .modal-stat-item { display: flex; flex-direction: column; gap: 3px; }
+    .modal-stat-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #334155; }
+    .modal-stat-val { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #e2e8f0; }
+    .modal-stat-val.green { color: #00e5a0; }
+    .modal-stat-val.blue { color: #38bdf8; }
+    .modal-desc-text { font-size: 12px; color: #475569; line-height: 1.6; margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 8px; justify-content: center; }
 
-    /* ── MOBILE RESPONSIVE MEDIA QUERIES ── */
+    /* ── MOBILE RESPONSIVE ── */
     @media (max-width: 960px) {
       .bottom-hud {
         grid-template-columns: 1fr;
@@ -292,6 +430,7 @@
       .radar-card { display: none; }
       .mobile-hud-toggle { display: inline-flex; }
       #mobile-dpad { display: block; }
+      #mission-ticker { display: none; }
     }
 
     @media (max-width: 600px) {
@@ -363,61 +502,81 @@
     <!-- Left: Telemetry PFD -->
     <div class="hud-card pfd-card">
       <div class="pfd-header">
-        <span class="pfd-title">Avionics &amp; Telemetry</span>
+        <span class="pfd-title">▸ Avionics &amp; Telemetry</span>
         <span class="safety-tag" id="hud-status-badge">AUTOPILOT READY</span>
       </div>
       <div class="pfd-content">
         <div class="metric-rows">
-          <div class="metric-row"><span class="m-label">Altitude AGL:</span><span class="m-val green" id="hud-alt">0.0 m</span></div>
-          <div class="metric-row"><span class="m-label">Ground Speed:</span><span class="m-val blue" id="hud-spd">0.0 km/h</span></div>
-          <div class="metric-row"><span class="m-label">Target Dist:</span><span class="m-val" id="hud-dist">160.0 m</span></div>
-          <div class="metric-row"><span class="m-label">Obstacle Buffer:</span><span class="m-val green" id="hud-obs">CLEAR (&gt;25m)</span></div>
-          <div class="metric-row"><span class="m-label">Bio-Pod Temp:</span><span class="m-val green" id="hud-temp">4.0 °C</span></div>
-          <div class="metric-row"><span class="m-label">Battery SoC:</span><span class="m-val blue" id="hud-battery">98% (23.2V)</span></div>
-          <div class="metric-row"><span class="m-label">Payload:</span><span class="m-val amber" id="hud-payload">Donor Heart Secure</span></div>
+          <div class="metric-row"><span class="m-label"><span class="m-label-icon">📡</span>Altitude AGL</span><span class="m-val green" id="hud-alt">0.0 m</span></div>
+          <div class="metric-row"><span class="m-label"><span class="m-label-icon">💨</span>Ground Speed</span><span class="m-val blue" id="hud-spd">0.0 km/h</span></div>
+          <div class="metric-row"><span class="m-label"><span class="m-label-icon">🎯</span>Target Dist</span><span class="m-val" id="hud-dist">160.0 m</span></div>
+          <div class="metric-row"><span class="m-label"><span class="m-label-icon">🛡️</span>Obstacle</span><span class="m-val green" id="hud-obs">CLEAR (&gt;25m)</span></div>
+          <div class="metric-row"><span class="m-label"><span class="m-label-icon">🧊</span>Bio-Pod</span><span class="m-val green" id="hud-temp">4.0 °C</span></div>
+          <div class="metric-row"><span class="m-label"><span class="m-label-icon">🔋</span>Battery SoC</span><span class="m-val blue" id="hud-battery">98% (23.2V)</span></div>
+          <div class="metric-row"><span class="m-label"><span class="m-label-icon">💊</span>Payload</span><span class="m-val amber" id="hud-payload">Donor Heart Secure</span></div>
         </div>
-        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
-          <canvas id="horizon-canvas" width="62" height="62"></canvas>
-          <span style="font-size:9px; font-weight:700; color:#94a3b8; font-family:'JetBrains Mono';">HORIZON</span>
+        <div class="horizon-wrapper">
+          <canvas id="horizon-canvas" width="64" height="64"></canvas>
+          <span class="horizon-label">HORIZON</span>
         </div>
       </div>
     </div>
 
     <!-- Center: Mini Radar & Phase Text -->
     <div class="hud-card radar-card">
-      <div class="radar-canvas-box">
-        <canvas id="radar-canvas" width="90" height="72"></canvas>
+      <div class="radar-section">
+        <div class="radar-canvas-box">
+          <canvas id="radar-canvas" width="94" height="74"></canvas>
+        </div>
+        <div class="radar-label">Tactical Airspace</div>
       </div>
       <div class="radar-details">
         <div class="phase-badge-text" id="hud-phase-title">PRE-FLIGHT AT AIRPORT</div>
         <div class="phase-sub-text" id="hud-phase-sub">Position locked at Launchpad. 3D waypoint guidance ready.</div>
-        <div style="display:flex; gap:12px; margin-top:3px; font-family:'JetBrains Mono'; font-size:10.5px;">
-          <span>LAT: <strong style="color:#f1f5f9;">23.0772°N</strong></span>
-          <span>LNG: <strong style="color:#f1f5f9;">72.6289°E</strong></span>
+        <div class="gps-coords">
+          <span>LAT: <strong id="hud-lat">23.0772°N</strong></span>
+          <span>LNG: <strong id="hud-lng">72.6289°E</strong></span>
         </div>
       </div>
     </div>
 
     <!-- Right: Mission Controls -->
     <div class="hud-card action-card">
+      <div class="action-card-header">▸ Mission Control</div>
       <button class="btn-act btn-act-green" id="btn-outbound" onclick="startOutbound()">
         🛫 Start Outbound (Airport ➔ Hospital)
       </button>
       <button class="btn-act btn-act-blue" id="btn-return" onclick="startReturn()">
-        🛬 Vice-Versa (Hospital ➔ Airport)
+        🛬 Return (Hospital ➔ Airport)
       </button>
-      <div style="display:flex; gap:6px;">
-        <button class="btn-act btn-act-sub" style="flex:1;" onclick="toggleWind()">
+      <div class="btn-row">
+        <button class="btn-act btn-act-sub" onclick="toggleWind()">
           💨 <span id="wind-label">Wind: Calm</span>
         </button>
-        <button class="btn-act btn-act-sub" style="flex:1;" onclick="resetMission()">
+        <button class="btn-act btn-act-sub" onclick="resetMission()">
           ↺ Reset
         </button>
       </div>
       <a href="index.html" class="btn-act btn-act-sub" style="text-decoration:none;">
-        ← Back to Website
+        ← Back to Site
       </a>
     </div>
+  </div>
+</div>
+
+<!-- LIVE MISSION TICKER (Center Top) -->
+<div id="mission-ticker">
+  <div class="ticker-inner">
+    <div class="ticker-live-dot"></div>
+    <span class="ticker-live-label">Live</span>
+    <div class="ticker-sep"></div>
+    <span class="ticker-phase" id="tk-phase">Standby</span>
+    <div class="ticker-sep"></div>
+    <span class="ticker-val"><span class="ticker-key">ALT</span><span id="tk-alt">0.0 m</span></span>
+    <div class="ticker-sep"></div>
+    <span class="ticker-val"><span class="ticker-key">SPD</span><span id="tk-spd">0.0 km/h</span></span>
+    <div class="ticker-sep"></div>
+    <span class="ticker-val"><span class="ticker-key">DIST</span><span id="tk-dist">160.0 m</span></span>
   </div>
 </div>
 
@@ -428,7 +587,7 @@
     <div class="dpad-btn" onpointerdown="setKey('w', true)" onpointerup="setKey('w', false)">W</div>
     <div class="dpad-btn" onpointerdown="setKey('ArrowDown', true)" onpointerup="setKey('ArrowDown', false)">▼</div>
     <div class="dpad-btn" onpointerdown="setKey('a', true)" onpointerup="setKey('a', false)">A</div>
-    <div class="dpad-btn" style="background:transparent; border:none; font-size:11px; color:#94a3b8;">DPAD</div>
+    <div class="dpad-btn" style="background:transparent; border:none; font-size:11px; color:#334155;">DPAD</div>
     <div class="dpad-btn" onpointerdown="setKey('d', true)" onpointerup="setKey('d', false)">D</div>
     <div class="dpad-btn" onpointerdown="setKey('ArrowLeft', true)" onpointerup="setKey('ArrowLeft', false)">↶</div>
     <div class="dpad-btn" onpointerdown="setKey('s', true)" onpointerup="setKey('s', false)">S</div>
@@ -436,23 +595,37 @@
   </div>
 </div>
 
-<!-- SUCCESS MODAL -->
+<!-- MISSION COMPLETE MODAL -->
 <div id="success-modal">
-  <div style="font-size:36px;" id="modal-icon">✅</div>
-  <h3 style="font-size:18px; font-weight:800; color:#fff;" id="modal-title">Organ Delivered!</h3>
+  <div class="modal-badge">✅ Mission Complete</div>
+  <span class="modal-icon-big" id="modal-icon">✅</span>
+  <h3 class="modal-title-main" id="modal-title">Organ Delivered!</h3>
   <div class="modal-acc" id="modal-acc">0.08 m</div>
-  <p style="font-size:12px; color:#94a3b8; line-height:1.5; margin-bottom:12px;" id="modal-desc">
-    Precision touchdown locked on <strong>Institute of Kidney Diseases &amp; Research Centre (IKDRC) Rooftop Helipad</strong>. Donor heart received at 4.0°C by surgical team.
-  </p>
+  <div class="modal-acc-label">Precision Landing Accuracy</div>
   <div class="modal-stats">
-    <div>Optical Accuracy: <strong style="color:#00e5a0;" id="m-acc">0.08 m</strong></div>
-    <div>Corridor Time: <strong style="color:#38bdf8;">17m 42s</strong></div>
-    <div>Pod Temp: <strong style="color:#00e5a0;">4.0°C</strong></div>
-    <div>Battery Left: <strong style="color:#38bdf8;">84%</strong></div>
+    <div class="modal-stat-item">
+      <div class="modal-stat-label">Optical Accuracy</div>
+      <div class="modal-stat-val green" id="m-acc">0.08 m</div>
+    </div>
+    <div class="modal-stat-item">
+      <div class="modal-stat-label">Corridor Time</div>
+      <div class="modal-stat-val blue">17m 42s</div>
+    </div>
+    <div class="modal-stat-item">
+      <div class="modal-stat-label">Pod Temperature</div>
+      <div class="modal-stat-val green">4.0 °C ✓</div>
+    </div>
+    <div class="modal-stat-item">
+      <div class="modal-stat-label">Battery Left</div>
+      <div class="modal-stat-val blue">84%</div>
+    </div>
   </div>
-  <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+  <p class="modal-desc-text" id="modal-desc">
+    Precision touchdown locked on <strong style="color:#e2e8f0;">IKDRC Rooftop Helipad</strong>. Donor heart received at 4.0°C by surgical team.
+  </p>
+  <div class="modal-actions">
     <button class="btn-act btn-act-blue" onclick="startReturn(); closeModal();">
-      🚀 Start Vice-Versa Return Flight
+      🚀 Start Return Flight
     </button>
     <button class="btn-act btn-act-sub" onclick="closeModal();">
       Dismiss
@@ -1476,7 +1649,7 @@ const rCanvas = document.getElementById('radar-canvas');
 const rCtx = rCanvas.getContext('2d');
 
 function drawTacticalRadar() {
-  const W = 90, H = 72;
+  const W = 94, H = 74;
   rCtx.clearRect(0, 0, W, H);
 
   const mapX = (x) => 10 + ((x - (-70)) / 170) * (W - 20);
@@ -1573,6 +1746,16 @@ function updateHUD() {
   document.getElementById('hud-phase-title').textContent = phaseName;
   document.getElementById('hud-phase-sub').textContent = phaseDesc;
   document.getElementById('hud-status-badge').textContent = missionState === 'STANDBY' ? 'MANUAL / READY' : 'AUTOPILOT ACTIVE';
+
+  // Update live ticker
+  const tkPhase = document.getElementById('tk-phase');
+  const tkAlt = document.getElementById('tk-alt');
+  const tkSpd = document.getElementById('tk-spd');
+  const tkDist = document.getElementById('tk-dist');
+  if (tkPhase) tkPhase.textContent = phaseName;
+  if (tkAlt) tkAlt.textContent = `${Math.max(0, droneState.pos.y).toFixed(1)} m`;
+  if (tkSpd) tkSpd.textContent = `${speedKmh} km/h`;
+  if (tkDist) tkDist.textContent = `${distLZ} m`;
 
   drawHorizonPFD();
   drawTacticalRadar();
