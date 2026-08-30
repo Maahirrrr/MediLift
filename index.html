@@ -302,6 +302,29 @@
       padding: 36px 32px;
       text-align: center;
       border-right: 1px solid var(--border);
+      position: relative;
+      transition: background 0.2s;
+    }
+    .stat-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 48px; height: 3px;
+      background: var(--accent);
+      border-radius: 0 0 4px 4px;
+    }
+    .stat-item:nth-child(2)::before { background: var(--accent-2); }
+    .stat-item:nth-child(3)::before { background: #8b5cf6; }
+    .stat-item:nth-child(4)::before { background: #f59e0b; }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-size: 44px; font-weight: 900; letter-spacing: -0.04em;
+      margin-bottom: 6px; color: var(--accent);
+    }
+    .stat-item:nth-child(2) .stat-num { color: var(--accent-2); }
+    .stat-item:nth-child(3) .stat-num { color: #8b5cf6; }
+    .stat-item:nth-child(4) .stat-num { color: #f59e0b; }
+    .stat-num span { font-size: 22px; font-weight: 600; }
       transition: background .2s;
     }
     .stat-item:last-child { border-right: none; }
@@ -756,12 +779,63 @@
       Learn the mission →
     </a>
   </div>
-  <!-- Embedded Simulator Preview -->
-  <div class="sim-embed-wrapper">
-    <span class="sim-embed-label"><span class="sim-live-dot"></span> Live Demo — Ahmedabad Green Corridor</span>
-    <a href="simulator.html" class="sim-open-btn" target="_blank">⛶ Open Full Simulator →</a>
-    <iframe src="simulator.html" title="Autonomous Delivery Drone Simulator" allow="fullscreen"></iframe>
-  </div>
+  <!-- Simulator Preview Card — click to open full simulator -->
+  <a href="simulator.html" class="sim-preview-card" style="
+    display:block; text-decoration:none; margin: 72px auto 0;
+    width: 100%; max-width: 900px;
+    background: linear-gradient(145deg, #0a0f1e 0%, #0d1629 40%, #091420 100%);
+    border-radius: 28px;
+    border: 1px solid rgba(0,229,160,0.25);
+    box-shadow: 0 60px 100px -20px rgba(0,0,0,0.42), 0 0 60px rgba(0,179,126,0.12), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 16/9;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s;
+  " onmouseover="this.style.transform='scale(1.018)';this.style.boxShadow='0 70px 120px -20px rgba(0,0,0,0.55), 0 0 90px rgba(0,179,126,0.22)'"
+     onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 60px 100px -20px rgba(0,0,0,0.42), 0 0 60px rgba(0,179,126,0.12), 0 0 0 1px rgba(255,255,255,0.04) inset'">
+    <!-- Background glow orbs -->
+    <div style="position:absolute;top:-80px;left:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(0,179,126,0.18) 0%,transparent 70%);pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-60px;right:-60px;width:280px;height:280px;background:radial-gradient(circle,rgba(0,100,200,0.15) 0%,transparent 70%);pointer-events:none;"></div>
+    <!-- Grid lines overlay -->
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,160,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,160,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;"></div>
+    <!-- Top bar simulation preview -->
+    <div style="position:absolute;top:20px;left:20px;right:20px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;background:rgba(4,8,20,0.88);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:8px 16px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#059669;box-shadow:0 0 10px #059669;animation:pulse 1.2s infinite;"></div>
+        <span style="font-size:12px;font-weight:700;color:#fff;letter-spacing:-0.01em;">MediLift 3D</span>
+        <span style="font-size:10px;color:#475569;font-weight:500;">SVP Airport ⇄ IKDRC Hospital</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;background:rgba(4,8,20,0.88);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:7px 14px;">
+        <span style="font-size:11px;color:#64748b;font-weight:600;">☀️ Day</span>
+        <span style="width:1px;height:12px;background:rgba(255,255,255,0.1);"></span>
+        <span style="font-size:11px;color:#64748b;font-weight:600;">🎥 Chase</span>
+        <span style="width:1px;height:12px;background:rgba(255,255,255,0.1);"></span>
+        <span style="font-size:11px;color:#64748b;font-weight:600;">🌙 Night</span>
+      </div>
+    </div>
+    <!-- Center play button -->
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+      <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#059669,#00e5a0);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(0,229,160,0.5),0 0 0 16px rgba(0,229,160,0.1);font-size:26px;padding-left:4px;">▶</div>
+      <div style="text-align:center;">
+        <div style="font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.03em;margin-bottom:6px;">Launch 3D Simulator</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.35);font-weight:500;">Autonomous drone · Real Ahmedabad landmarks · Physics simulation</div>
+      </div>
+    </div>
+    <!-- Bottom live stats bar -->
+    <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(2,4,12,0.9);border-top:1px solid rgba(255,255,255,0.07);padding:14px 24px;display:flex;align-items:center;justify-content:center;gap:32px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:6px;height:6px;border-radius:50%;background:#ef4444;box-shadow:0 0 8px #ef4444;animation:pulse 1s infinite;"></div>
+        <span style="font-size:11px;font-weight:700;color:#ef4444;letter-spacing:0.08em;">LIVE SIM</span>
+      </div>
+      <span style="color:rgba(255,255,255,0.15);font-size:18px;font-weight:100;">|</span>
+      <span style="font-size:11px;color:rgba(255,255,255,0.35);">🛫 Airport ➔ 🏥 IKDRC Hospital · 5.42 km corridor</span>
+      <span style="color:rgba(255,255,255,0.15);font-size:18px;font-weight:100;">|</span>
+      <span style="font-size:11px;color:rgba(255,255,255,0.35);">⬆ 50m AGL · 18 min avg delivery</span>
+      <span style="color:rgba(255,255,255,0.15);font-size:18px;font-weight:100;">|</span>
+      <span style="font-size:11px;color:rgba(255,255,255,0.35);">🧊 4.0°C Bio-Pod Active</span>
+    </div>
+  </a>
 </section>
 
 <!-- STATS -->
@@ -1069,15 +1143,15 @@
         <h3 class="card-title">Transplant readiness on landing</h3>
         <p class="card-desc">Our temperature-controlled bio-payload pod maintains 4°C continuously. The hospital receives the organ at the rooftop helipad. The surgical team is already scrubbed. No waiting. No delays.</p>
       </div>
-      <div class="mission-card accent-card">
+      <div class="mission-card" style="background: linear-gradient(135deg, #059669 0%, #00b37e 60%, #10b981 100%); color: white; border-color: transparent;">
         <span class="card-icon">🛡️</span>
-        <h3 class="card-title">No hardware? No problem.</h3>
-        <p class="card-desc" style="color:rgba(255,255,255,0.6)">We partner directly with hospital networks and organ transplant trusts. Our software platform manages the entire mission from dispatch to delivery through one API-first dashboard.</p>
+        <h3 class="card-title" style="color:white;">No hardware? No problem.</h3>
+        <p class="card-desc" style="color:rgba(255,255,255,0.8);">We partner directly with hospital networks and organ transplant trusts. Our software platform manages the entire mission from dispatch to delivery through one API-first dashboard.</p>
       </div>
-      <div class="mission-card">
+      <div class="mission-card" style="background: linear-gradient(135deg, #0369a1 0%, #0284c7 60%, #0ea5e9 100%); color: white; border-color: transparent;">
         <span class="card-icon">📊</span>
-        <h3 class="card-title">Measurable outcomes</h3>
-        <p class="card-desc">Every mission is logged: flight path, landing accuracy, temperature log, time-to-delivery. Full audit trail for DGCA compliance and hospital records.</p>
+        <h3 class="card-title" style="color:white;">Measurable outcomes</h3>
+        <p class="card-desc" style="color:rgba(255,255,255,0.8);">Every mission is logged: flight path, landing accuracy, temperature log, time-to-delivery. Full audit trail for DGCA compliance and hospital records.</p>
       </div>
     </div>
   </div>

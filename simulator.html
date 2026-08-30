@@ -449,51 +449,50 @@
 <canvas id="c"></canvas>
 
 <div id="hud-overlay">
-  <!-- TOP BAR -->
+  <!-- SINGLE UNIFIED TOP BAR -->
   <div class="top-bar">
+    <!-- Brand -->
     <div class="glass-pill brand-container">
       <div class="brand-icon">🚁</div>
       <div>
         <div class="brand-text">MediLift 3D</div>
-        <div class="brand-sub">SVP Airport (AMD) ⇄ IKDRC Hospital</div>
+        <div class="brand-sub">AMD ⇄ IKDRC</div>
       </div>
     </div>
 
-    <!-- Stepper -->
+    <!-- Mission Stepper (center) -->
     <div class="glass-pill corridor-stepper">
       <div class="step-item active" id="st-airport">
-        <span class="step-dot"></span> <span>Airport Hub</span>
+        <span class="step-dot"></span><span>Airport</span>
       </div>
       <div class="step-line"></div>
       <div class="step-item" id="st-river">
-        <span class="step-dot"></span> <span>Sabarmati</span>
+        <span class="step-dot"></span><span>Sabarmati</span>
       </div>
       <div class="step-line"></div>
       <div class="step-item" id="st-hospital">
-        <span class="step-dot"></span> <span>Civil IKDRC</span>
+        <span class="step-dot"></span><span>IKDRC</span>
       </div>
     </div>
 
-    <!-- Environment Lighting Mode & Audio -->
-    <div class="glass-pill env-toolbar">
-      <button class="cam-btn active" onclick="setSkyTheme('day')">☀️ Day</button>
-      <button class="cam-btn" onclick="setSkyTheme('sunset')">🌅 Sunset</button>
-      <button class="cam-btn" onclick="setSkyTheme('night')">🌙 Night</button>
-      <button class="cam-btn" id="btn-audio" onclick="toggleAudio()">🔊 Sound</button>
-    </div>
-
-    <!-- Camera Selector -->
+    <!-- Right controls: all in one pill -->
     <div class="glass-pill cam-toolbar">
       <button class="cam-btn active" onclick="switchCamera('chase')">🎥 Chase</button>
       <button class="cam-btn" onclick="switchCamera('fpv')">🕶️ FPV</button>
       <button class="cam-btn" onclick="switchCamera('orbit')">🔄 Orbit</button>
-      <button class="cam-btn" onclick="switchCamera('tower')">🗼 Tower</button>
-      <button class="cam-btn" onclick="switchCamera('helipad')">🏥 Helipad</button>
+      <button class="cam-btn" onclick="switchCamera('helipad')">🏥 Pad</button>
+      <span style="width:1px;height:18px;background:rgba(255,255,255,0.08);margin:0 2px;"></span>
+      <button class="cam-btn" onclick="setSkyTheme('day')" id="sky-day">☀️</button>
+      <button class="cam-btn" onclick="setSkyTheme('sunset')" id="sky-sunset">🌅</button>
+      <button class="cam-btn" onclick="setSkyTheme('night')" id="sky-night">🌙</button>
+      <span style="width:1px;height:18px;background:rgba(255,255,255,0.08);margin:0 2px;"></span>
+      <button class="cam-btn" id="btn-audio" onclick="toggleAudio()">🔊</button>
+      <a href="index.html" class="cam-btn" style="text-decoration:none;">← Site</a>
     </div>
 
     <!-- Mobile HUD Collapse Button -->
     <button class="mobile-hud-toggle" onclick="toggleMobileHUD()">
-      📊 <span id="lbl-hud-toggle">Hide Telemetry</span>
+      📊 <span id="lbl-hud-toggle">Hide HUD</span>
     </button>
   </div>
 
@@ -512,7 +511,7 @@
           <div class="metric-row"><span class="m-label"><span class="m-label-icon">🎯</span>Target Dist</span><span class="m-val" id="hud-dist">160.0 m</span></div>
           <div class="metric-row"><span class="m-label"><span class="m-label-icon">🛡️</span>Obstacle</span><span class="m-val green" id="hud-obs">CLEAR (&gt;25m)</span></div>
           <div class="metric-row"><span class="m-label"><span class="m-label-icon">🧊</span>Bio-Pod</span><span class="m-val green" id="hud-temp">4.0 °C</span></div>
-          <div class="metric-row"><span class="m-label"><span class="m-label-icon">🔋</span>Battery SoC</span><span class="m-val blue" id="hud-battery">98% (23.2V)</span></div>
+          <div class="metric-row"><span class="m-label"><span class="m-label-icon">🔋</span>Battery</span><span class="m-val blue" id="hud-battery">98% (23.2V)</span></div>
           <div class="metric-row"><span class="m-label"><span class="m-label-icon">💊</span>Payload</span><span class="m-val amber" id="hud-payload">Donor Heart Secure</span></div>
         </div>
         <div class="horizon-wrapper">
@@ -532,7 +531,7 @@
       </div>
       <div class="radar-details">
         <div class="phase-badge-text" id="hud-phase-title">PRE-FLIGHT AT AIRPORT</div>
-        <div class="phase-sub-text" id="hud-phase-sub">Position locked at Launchpad. 3D waypoint guidance ready.</div>
+        <div class="phase-sub-text" id="hud-phase-sub">Position locked. Press Start Outbound to begin.</div>
         <div class="gps-coords">
           <span>LAT: <strong id="hud-lat">23.0772°N</strong></span>
           <span>LNG: <strong id="hud-lng">72.6289°E</strong></span>
@@ -540,26 +539,23 @@
       </div>
     </div>
 
-    <!-- Right: Mission Controls -->
+    <!-- Right: Mission Controls — Simplified -->
     <div class="hud-card action-card">
       <div class="action-card-header">▸ Mission Control</div>
       <button class="btn-act btn-act-green" id="btn-outbound" onclick="startOutbound()">
-        🛫 Start Outbound (Airport ➔ Hospital)
+        🛫 Start Outbound Mission
       </button>
       <button class="btn-act btn-act-blue" id="btn-return" onclick="startReturn()">
-        🛬 Return (Hospital ➔ Airport)
+        🛬 Return to Airport
       </button>
       <div class="btn-row">
         <button class="btn-act btn-act-sub" onclick="toggleWind()">
-          💨 <span id="wind-label">Wind: Calm</span>
+          💨 <span id="wind-label">Wind: Off</span>
         </button>
         <button class="btn-act btn-act-sub" onclick="resetMission()">
           ↺ Reset
         </button>
       </div>
-      <a href="index.html" class="btn-act btn-act-sub" style="text-decoration:none;">
-        ← Back to Site
-      </a>
     </div>
   </div>
 </div>
@@ -1856,6 +1852,9 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
+
+// Auto-start outbound mission after a short delay so judges see action immediately
+setTimeout(() => { startOutbound(); }, 1200);
 </script>
 </body>
 </html>
